@@ -4,13 +4,14 @@ var Kozy;
     }
     class KozyDebugger {
         constructor() {
-            this.clientClick = document.getElementById("add-client");
+            this.clients = [];
+            this.addClientButton = document.getElementById("add-client");
             this.clientDiv = document.getElementById("clients");
         }
         sendOutgoingMessage(message, clientIdentifier) {
             let matchingClient = this.clients.find(client => client.identifier = clientIdentifier);
             if (matchingClient) {
-                matchingClient.window.contentWindow.postMessage(message, "*");
+                matchingClient.iframe.contentWindow.postMessage(message, "*");
             }
         }
         receiveIncomingMessage(message) {
@@ -26,14 +27,34 @@ var Kozy;
                     break;
             }
         }
+        addNewClient(url) {
+            let iframeContainer = document.createElement("div");
+            iframeContainer.style.display = "inline-grid";
+            let iframe = document.createElement("iframe");
+            iframe.src = url;
+            let identifier = Date.now().toString();
+            if (!this.clients) {
+                this.hostClientIdentifier = identifier;
+            }
+            iframeContainer.appendChild(iframe);
+            let makeHostButton = document.createElement("button");
+            makeHostButton.innerHTML = "Make kozy host";
+            makeHostButton.onclick = event => {
+                this.hostClientIdentifier = identifier;
+                this.clients.forEach(client => {
+                    this.sendOutgoingMessage({ type: "HostHasChanged", payload: {} }, identifier);
+                });
+            };
+            iframeContainer.appendChild(makeHostButton);
+            this.clientDiv.appendChild(iframeContainer);
+            this.clients.push({ identifier, iframe, makeHostButton });
+        }
         start(params) {
             window.addEventListener("message", (event) => {
                 this.receiveIncomingMessage(event.data);
             });
-            this.clientClick.onclick = event => {
-                let iframe = document.createElement("iframe");
-                iframe.src = params["integration-url"];
-                this.clientDiv.appendChild(iframe);
+            this.addClientButton.onclick = event => {
+                this.addNewClient(params["integration-url"]);
             };
         }
     }
