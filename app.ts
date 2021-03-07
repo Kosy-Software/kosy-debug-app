@@ -8,7 +8,7 @@ module Kozy {
     type KosyClient = { 
         info: ClientInfo,
         iframe: HTMLIFrameElement,
-        makeHostButton: HTMLButtonElement
+        removeClientButton: HTMLButtonElement
     }
 
     type ClientMessage = any;
@@ -138,14 +138,14 @@ module Kozy {
             let info = this.generateClientInfo();
             iframeContainer.appendChild(iframe);
 
-            let makeHostButton = document.createElement("button");
-            makeHostButton.innerHTML = "Leave the table";
-            iframeContainer.appendChild(makeHostButton);
+            let removeClientButton = document.createElement("button");
+            removeClientButton.innerHTML = "Leave the table";
+            iframeContainer.appendChild(removeClientButton);
             this.clientDiv.appendChild(iframeContainer);
 
-            let kosyClient = { info, iframe, makeHostButton }
+            let kosyClient = { info, iframe, removeClientButton }
             this.registerClient(kosyClient);
-            kosyClient.makeHostButton.onclick = event => {
+            kosyClient.removeClientButton.onclick = event => {
                 this.unregisterClient(kosyClient);
             };
         }
