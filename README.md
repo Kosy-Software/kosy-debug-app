@@ -5,7 +5,7 @@ This app will emulate the behavior of the kozy p2p protocol for development purp
 Add a settings.json file (don't check it in! it is .gitignore so every kozy app developer can start using this code). Then add in the following json:
 
 {
-    "integration-url": <url to your integration>
+    "integration-url": "url to your integration here"
 }
 
 ## to compile and run the app
