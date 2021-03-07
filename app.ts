@@ -8,7 +8,7 @@ module Kozy {
     type KosyClient = { 
         info: ClientInfo,
         iframe: HTMLIFrameElement,
-        makeHostButton: HTMLButtonElement 
+        makeHostButton: HTMLButtonElement
     }
 
     type ClientMessage = any;
@@ -41,7 +41,7 @@ module Kozy {
         }
 
         private findUnclaimedSeatNumber(): number {
-            var maxSeatNumber = 1;
+            var maxSeatNumber = this.clients.length + 1;
             for (var client of this.clients) {
                 switch (client.info.clientLocation.type) {
                     case "SeatedAtTable":
@@ -83,10 +83,20 @@ module Kozy {
             fromClient.iframe.contentWindow.postMessage(message, "*");
         }
 
-        public receiveIncomingMessage (message: ClientToServerMessage<ClientMessage>) {
+        public receiveIncomingMessage (source: MessageEventSource, message: ClientToServerMessage<ClientMessage>) {
             switch (message.type) {
                 case "ReadyAndListening":
                     alert("Received: Ready and listening.");
+                    let kosyClients = this.clients.filter(client => client.iframe.contentWindow == source);
+                    if (kosyClients.length === 1) {
+                        let kosyClient = kosyClients[0];
+                        let receiveClientInfoMessage = this.createReceiveClientInfoMessage(kosyClient);
+                        this.sendOutgoingMessage(receiveClientInfoMessage, kosyClient);
+                        let clientHasJoinedMessage = this.createClientHasJoinedMessage(kosyClient)
+                        this.clients.forEach(client => this.sendOutgoingMessage(clientHasJoinedMessage, client));
+                    } else {
+                        throw "Could not found the message's source, oopsy?"
+                    }
                     break;
                 case "RelayMessage":
                     alert("Received: Relay message.");
@@ -95,23 +105,17 @@ module Kozy {
         }
 
         private unregisterClient(client: KosyClient): void {
-            this.clients = this.clients.filter(existing => existing = client);
-            this.sendOutgoingMessage(this.createClientHasLeftMessage (client), client);
+            this.clients = this.clients.filter(existing => existing != client);
+            this.sendOutgoingMessage(this.createClientHasLeftMessage (client), client);            
+            client.iframe.parentElement.remove();
         }
 
         private registerClient(kosyClient: KosyClient): void {
             this.clients.push(kosyClient);
-            let receiveClientInfoMessage = this.createReceiveClientInfoMessage(kosyClient);
-            this.sendOutgoingMessage(receiveClientInfoMessage, kosyClient);
-            let clientHasJoinedMessage = this.createClientHasJoinedMessage(kosyClient)
-            this.clients.forEach(client => this.sendOutgoingMessage(clientHasJoinedMessage, client));
-            kosyClient.makeHostButton.onclick = event => {
-                this.unregisterClient(kosyClient);
-            };
         }
 
         private generateClientInfo(): ClientInfo {
-            let clientId = Date.now.toString();
+            let clientId = Date.now().toString();
             return {
                 clientUuid: clientId,
                 clientName: "Client: " + clientId,
@@ -139,12 +143,16 @@ module Kozy {
             iframeContainer.appendChild(makeHostButton);
             this.clientDiv.appendChild(iframeContainer);
 
-            this.registerClient({ info, iframe, makeHostButton });
+            let kosyClient = { info, iframe, makeHostButton }
+            this.registerClient(kosyClient);
+            kosyClient.makeHostButton.onclick = event => {
+                this.unregisterClient(kosyClient);
+            };
         }
 
         public start (params: StartupParameters): void {
             window.addEventListener("message", (event: MessageEvent<ClientToServerMessage<ClientMessage>>) => {
-                this.receiveIncomingMessage(event.data);
+                this.receiveIncomingMessage(event.source, event.data);
             });
             this.addClientButton.onclick = event => {
                 this.addNewClient (params["integration-url"]);
