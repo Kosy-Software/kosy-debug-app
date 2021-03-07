@@ -95,12 +95,15 @@ module Kozy {
                         let clientHasJoinedMessage = this.createClientHasJoinedMessage(kosyClient)
                         this.clients.forEach(client => this.sendOutgoingMessage(clientHasJoinedMessage, client));
                     } else {
-                        throw "Could not found the message's source, oopsy?"
+                        throw "Could not found the message's source, this should not occur?"
                     }
                     break;
                 case "RelayMessage":
                     alert("Received: Relay message.");
                     break;
+                default:
+                    console.log("An unexpected message was received: " + JSON.stringify(message));
+                    break;    
             }
         }
 
