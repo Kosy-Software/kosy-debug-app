@@ -13,62 +13,64 @@ module Kozy {
 
     type ClientMessage = any;
 
+    const defaultBuilding: Building = {
+        buildingKey: "TestBuilding",
+        buildingName: "TestBuilding"
+    }
+    const defaultFloor: Floor = {
+        floorUuid: "TestFloor",
+        floorName: "TestFloor"
+    }
+    const defaultTable: Table = {
+        tableUuid: "TestTable",
+        tableName: "TestTable",
+        numberOfSeats: 999
+    }
+    const defaultRoom: Room = {
+        roomUuid: "TestRoom",
+        roomName: "TestRoom"
+    }
+
     export class KozyDebugger {
         private clients: Array<KosyClient> = [];
         private addClientButton: HTMLButtonElement;
         private clientDiv: HTMLElement;
-        private defaultBuilding: Building = {
-            buildingKey: "TestBuilding",
-            buildingName: "TestBuilding"
-        }
-        private defaultFloor: Floor = {
-            floorUuid: "TestFloor",
-            floorName: "TestFloor"
-        }
-        private defaultTable: Table = {
-            tableUuid: "TestTable",
-            tableName: "TestTable",
-            numberOfSeats: 999
-        }
-        private defaultRoom: Room = {
-            roomUuid: "TestRoom",
-            roomName: "TestRoom"
-        }
 
         constructor () {
             this.addClientButton = document.getElementById("add-client") as HTMLButtonElement;
             this.clientDiv = document.getElementById("clients");
         }
 
-        private findUnclaimedSeatNumber(): number {
-            var maxSeatNumber = this.clients.length + 1;
-            for (var client of this.clients) {
+        private findUnclaimedSeatNumber(table: Table): number {
+            let seatsArray = new Array(table.numberOfSeats);
+            this.clients.forEach(client => {
                 switch (client.info.clientLocation.type) {
                     case "SeatedAtTable":
-                        if (client.info.clientLocation.seatNumber > maxSeatNumber) {
-                            maxSeatNumber = client.info.clientLocation.seatNumber + 1;
-                        }
-                        break;
-                    case "InPrivateConversation":
+                        seatsArray[client.info.clientLocation.seatNumber - 1] = true;
                         break;
                     default:
                         break;
                 }
+            });
+            for (let index = 0; index < seatsArray.length; index++) {
+                if (!seatsArray[index]) {
+                    return index + 1;
+                }
             }
-            return maxSeatNumber;
+            throw "No more available unclaimed seats...";
         }
 
-        private createClientHasJoinedMessage (client: KosyClient): ClientHasJoined {
+        private createClientHasJoinedMessage (kosyClient: KosyClient): ClientHasJoined {
             return {
                 type: "ClientHasJoined",
-                payload: client.info
+                payload: kosyClient.info
             }
         }
 
-        private createClientHasLeftMessage (client: KosyClient): ClientHasLeft {
+        private createClientHasLeftMessage (kosyClient: KosyClient): ClientHasLeft {
             return {
                 type: "ClientHasLeft",
-                payload: client.info
+                payload: kosyClient.info
             }
         }
 
@@ -124,21 +126,22 @@ module Kozy {
                 clientName: "Client: " + clientId,
                 clientLocation: {
                     type: "SeatedAtTable",
-                    building: this.defaultBuilding,
-                    floor: this.defaultFloor,
-                    room: this.defaultRoom,
-                    table: this.defaultTable,
-                    seatNumber: this.findUnclaimedSeatNumber()
+                    building: defaultBuilding,
+                    floor: defaultFloor,
+                    room: defaultRoom,
+                    table: defaultTable,
+                    seatNumber: this.findUnclaimedSeatNumber(defaultTable)
                 }
             }
         }
 
         private addNewClient (url: string): void {
+            let info = this.generateClientInfo();
+
             let iframeContainer = document.createElement("div");
             iframeContainer.style.display = "inline-grid";
             let iframe = document.createElement("iframe");
             iframe.src = url;
-            let info = this.generateClientInfo();
             iframeContainer.appendChild(iframe);
 
             let removeClientButton = document.createElement("button");
