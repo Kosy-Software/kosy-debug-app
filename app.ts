@@ -103,7 +103,7 @@ module Kosy {
                         let clientHasJoinedMessage = this.createClientHasJoinedMessage(kosyClient)
                         this.clients.forEach(client => this.sendOutgoingMessage(clientHasJoinedMessage, client));
                     } else {
-                        throw "Could not found the message's source, this should not occur?"
+                        throw "Could not find the message's source, this should not occur?"
                     }
                     break;
                 case "RelayMessage":
