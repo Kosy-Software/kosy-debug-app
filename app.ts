@@ -164,8 +164,6 @@ module Kozy {
     }
 }
 
-window.onload = () => {
-    fetch("settings.json")
-    .then(response => response.json())
-    .then(json => new Kozy.KozyDebugger().start(json));
-};
+fetch("settings.json")
+.then(response => response.json())
+.then(json => new Kozy.KozyDebugger().start(json));
