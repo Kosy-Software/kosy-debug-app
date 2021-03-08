@@ -1,14 +1,13 @@
 /// <reference path="messages.d.ts" />
 
-module Kozy {
+module Kosy {
     class StartupParameters {
         "integration-url": string
     }
 
     type KosyClient = { 
         info: ClientInfo,
-        iframe: HTMLIFrameElement,
-        removeClientButton: HTMLButtonElement
+        iframe: HTMLIFrameElement
     }
 
     type ClientMessage = any;
@@ -31,7 +30,7 @@ module Kozy {
         roomName: "TestRoom"
     }
 
-    export class KozyDebugger {
+    export class KosyDebugger {
         private clients: Array<KosyClient> = [];
         private addClientButton: HTMLButtonElement;
         private clientDiv: HTMLElement;
@@ -39,6 +38,10 @@ module Kozy {
         constructor () {
             this.addClientButton = document.getElementById("add-client") as HTMLButtonElement;
             this.clientDiv = document.getElementById("clients");
+        }
+
+        private log (...message: any[]) {
+            console.log(...message);
         }
 
         private findUnclaimedSeatNumber(table: Table): number {
@@ -74,10 +77,13 @@ module Kozy {
             }
         }
 
-        private createReceiveClientInfoMessage (kosyClient: KosyClient): ReceiveClientInfo {
+        private createReceiveInitialInfoMessage (kosyClient: KosyClient, initializer: KosyClient): ReceiveInitialInfo {
             return {
-                type: "ReceiveClientInfo",
-                payload: kosyClient.info
+                type: "ReceiveInitialInfo",
+                payload: {
+                    currentClient: kosyClient.info,
+                    initializer: initializer.info
+                }
             }
         }
 
@@ -88,11 +94,11 @@ module Kozy {
         public receiveIncomingMessage (source: MessageEventSource, message: ClientToServerMessage<ClientMessage>) {
             switch (message.type) {
                 case "ReadyAndListening":
-                    alert("Received: Ready and listening.");
-                    let kosyClients = this.clients.filter(client => client.iframe.contentWindow == source);
+                    this.log("Kosy received: Ready and listening.");
+                    let kosyClients = this.clients.filter(client => client.iframe.contentWindow === source);
                     if (kosyClients.length === 1) {
                         let kosyClient = kosyClients[0];
-                        let receiveClientInfoMessage = this.createReceiveClientInfoMessage(kosyClient);
+                        let receiveClientInfoMessage = this.createReceiveInitialInfoMessage(kosyClient, this.clients[0]);
                         this.sendOutgoingMessage(receiveClientInfoMessage, kosyClient);
                         let clientHasJoinedMessage = this.createClientHasJoinedMessage(kosyClient)
                         this.clients.forEach(client => this.sendOutgoingMessage(clientHasJoinedMessage, client));
@@ -101,17 +107,17 @@ module Kozy {
                     }
                     break;
                 case "RelayMessage":
-                    alert("Received: Relay message.");
+                    this.log("Kosy received: Relay message: ", message.payload);
                     break;
                 default:
-                    console.log("An unexpected message was received: " + JSON.stringify(message));
+                    this.log("Kosy received an unexpected message: ", message);
                     break;    
             }
         }
 
         private unregisterClient(client: KosyClient): void {
             this.clients = this.clients.filter(existing => existing != client);
-            this.sendOutgoingMessage(this.createClientHasLeftMessage (client), client);            
+            this.clients.forEach(notRemovedClient => this.sendOutgoingMessage(this.createClientHasLeftMessage (client), notRemovedClient));
             client.iframe.parentElement.remove();
         }
 
@@ -123,7 +129,7 @@ module Kozy {
             let clientId = Date.now().toString();
             return {
                 clientUuid: clientId,
-                clientName: "Client: " + clientId,
+                clientName: clientId,
                 clientLocation: {
                     type: "SeatedAtTable",
                     building: defaultBuilding,
@@ -142,6 +148,7 @@ module Kozy {
             iframeContainer.style.display = "inline-grid";
             let iframe = document.createElement("iframe");
             iframe.src = url;
+            iframe.sandbox.value = "allow-scripts allow-same-origin";
             iframeContainer.appendChild(iframe);
 
             let removeClientButton = document.createElement("button");
@@ -149,9 +156,9 @@ module Kozy {
             iframeContainer.appendChild(removeClientButton);
             this.clientDiv.appendChild(iframeContainer);
 
-            let kosyClient = { info, iframe, removeClientButton }
+            let kosyClient = { info, iframe }
             this.registerClient(kosyClient);
-            kosyClient.removeClientButton.onclick = event => {
+            removeClientButton.onclick = event => {
                 this.unregisterClient(kosyClient);
             };
         }
@@ -169,4 +176,4 @@ module Kozy {
 
 fetch("settings.json")
 .then(response => response.json())
-.then(json => new Kozy.KozyDebugger().start(json));
+.then(json => new Kosy.KosyDebugger().start(json));

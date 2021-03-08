@@ -1,9 +1,4 @@
-declare namespace Kozy {
-    type HostHasChanged = {
-        type: "HostHasChanged";
-        payload: any; //not known yet
-    }
-
+declare namespace Kosy {
     type Building = {
         buildingKey: string;
         buildingName: string;
@@ -46,12 +41,20 @@ declare namespace Kozy {
     type ClientInfo = {
         clientUuid: string;
         clientName: string;
-        clientLocation: ClientLocation
+        clientLocation: ClientLocation;
     }
 
-    type ReceiveClientInfo = {
-        type: "ReceiveClientInfo"
-        payload: ClientInfo
+    type InitialInfo = {
+        /// Information about the current client
+        currentClient: ClientInfo;
+        /// Could be the same as the current client, in this case, the current user initialized the integration
+        initializer: ClientInfo;
+    }
+
+    /// Note: this message is also used when the client info has changed (e.g. seat number or name)
+    type ReceiveInitialInfo = {
+        type: "ReceiveInitialInfo"
+        payload: InitialInfo
     }
 
     type ReceiveMessage<T> = {
@@ -64,15 +67,16 @@ declare namespace Kozy {
         payload: ClientInfo
     }
 
+    /// Note: this message is also used when the client info has changed (e.g. seat number or name)
     type ClientHasJoined = {
         type: "ClientHasJoined";
         payload: ClientInfo
     }
 
     type ServerToClientMessage<T> =
-        | ReceiveClientInfo
-        | ClientHasLeft
+        | ReceiveInitialInfo
         | ClientHasJoined
+        | ClientHasLeft
         | ReceiveMessage<T>
 
     type ReadyAndListening = {
