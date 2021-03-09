@@ -21,7 +21,7 @@ declare namespace Kosy {
     }
 
     type SeatedAtTable = {
-        type: "SeatedAtTable";
+        type: "seated-at-table";
         building: Building;
         floor: Floor;
         room: Room;
@@ -30,7 +30,7 @@ declare namespace Kosy {
     }
 
     type InPrivateConversation = {
-        type: "InPrivateConversation";
+        type: "in-private-conversation";
         conversationKey: string;
     }
 
@@ -55,23 +55,23 @@ declare namespace Kosy {
 
     /// Note: this message is also used when the client info has changed (e.g. seat number or name)
     type ReceiveInitialInfo = {
-        type: "ReceiveInitialInfo"
+        type: "receive-initial-info"
         payload: InitialInfo
     }
 
     type ReceiveMessage<T> = {
-        type: "ReceiveMessage";
+        type: "receive-message";
         payload: T;
     }
 
     type ClientHasLeft = {
-        type: "ClientHasLeft";
+        type: "client-has-left";
         payload: ClientInfo
     }
 
     /// Note: this message is also used when the client info has changed (e.g. seat number or name)
     type ClientHasJoined = {
-        type: "ClientHasJoined";
+        type: "client-has-joined";
         payload: ClientInfo
     }
 
@@ -82,12 +82,12 @@ declare namespace Kosy {
         | ReceiveMessage<T>
 
     type ReadyAndListening = {
-        type: "ReadyAndListening";
+        type: "ready-and-listening";
         payload: any; //not known yet
     }
 
     type RelayMessage<T> = {
-        type: "RelayMessage"
+        type: "relay-message"
         payload: T
     }
 

@@ -48,7 +48,7 @@ module Kosy {
             let seatsArray = new Array(table.numberOfSeats);
             this.clients.forEach(client => {
                 switch (client.info.clientLocation.type) {
-                    case "SeatedAtTable":
+                    case "seated-at-table":
                         seatsArray[client.info.clientLocation.seatNumber - 1] = true;
                         break;
                     default:
@@ -65,21 +65,21 @@ module Kosy {
 
         private createClientHasJoinedMessage (kosyClient: KosyClient): ClientHasJoined {
             return {
-                type: "ClientHasJoined",
+                type: "client-has-joined",
                 payload: kosyClient.info
             }
         }
 
         private createClientHasLeftMessage (kosyClient: KosyClient): ClientHasLeft {
             return {
-                type: "ClientHasLeft",
+                type: "client-has-left",
                 payload: kosyClient.info
             }
         }
 
         private createReceiveInitialInfoMessage (kosyClient: KosyClient, initializer: KosyClient): ReceiveInitialInfo {
             return {
-                type: "ReceiveInitialInfo",
+                type: "receive-initial-info",
                 payload: {
                     clients: 
                         this.clients.reduce((map: { [clientUuid: string]: ClientInfo }, nextValue) => { 
@@ -98,7 +98,7 @@ module Kosy {
 
         public receiveIncomingMessage (source: MessageEventSource, message: ClientToServerMessage<ClientMessage>) {
             switch (message.type) {
-                case "ReadyAndListening":
+                case "ready-and-listening":
                     this.log("Kosy received: Ready and listening.");
                     let kosyClients = this.clients.filter(client => client.iframe.contentWindow === source);
                     if (kosyClients.length === 1) {
@@ -111,7 +111,7 @@ module Kosy {
                         throw "Could not find the message's source, this should not occur?"
                     }
                     break;
-                case "RelayMessage":
+                case "relay-message":
                     this.log("Kosy received: Relay message: ", message.payload);
                     break;
                 default:
@@ -136,7 +136,7 @@ module Kosy {
                 clientUuid: clientId,
                 clientName: clientId,
                 clientLocation: {
-                    type: "SeatedAtTable",
+                    type: "seated-at-table",
                     building: defaultBuilding,
                     floor: defaultFloor,
                     room: defaultRoom,
