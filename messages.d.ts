@@ -45,10 +45,12 @@ declare namespace Kosy {
     }
 
     type InitialInfo = {
-        /// Information about the current client
-        currentClient: ClientInfo;
-        /// Could be the same as the current client, in this case, the current user initialized the integration
-        initializer: ClientInfo;
+        /// Information about all clients present
+        clients: { [clientUuid: string]: ClientInfo };
+        /// The current client's identifier
+        currentClientUuid: string;
+        /// The initializing client's identifier
+        initializerClientUuid: string;
     }
 
     /// Note: this message is also used when the client info has changed (e.g. seat number or name)

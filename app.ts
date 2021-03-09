@@ -81,8 +81,13 @@ module Kosy {
             return {
                 type: "ReceiveInitialInfo",
                 payload: {
-                    currentClient: kosyClient.info,
-                    initializer: initializer.info
+                    clients: 
+                        this.clients.reduce((map: { [clientUuid: string]: ClientInfo }, nextValue) => { 
+                            map[nextValue.info.clientUuid] = nextValue.info;
+                            return map;
+                        }, {}),
+                    currentClientUuid: kosyClient.info.clientUuid,
+                    initializerClientUuid: initializer.info.clientUuid
                 }
             }
         }
