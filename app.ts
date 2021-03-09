@@ -92,6 +92,13 @@ module Kosy {
             }
         }
 
+        private createReceiveMessage (payload: ClientMessage): ReceiveMessage<ClientMessage> {
+            return {
+                type: "receive-message",
+                payload
+            }
+        }
+
         public sendOutgoingMessage (message: ServerToClientMessage<ClientMessage>, fromClient: KosyClient) {
             fromClient.iframe.contentWindow.postMessage(message, "*");
         }
@@ -113,6 +120,8 @@ module Kosy {
                     break;
                 case "relay-message":
                     this.log("Kosy received: Relay message: ", message.payload);
+                    let receiveMessage = this.createReceiveMessage(message.payload);
+                    this.clients.forEach(client => this.sendOutgoingMessage(receiveMessage, client));
                     break;
                 default:
                     this.log("Kosy received an unexpected message: ", message);
@@ -153,7 +162,7 @@ module Kosy {
             iframeContainer.style.display = "inline-grid";
             let iframe = document.createElement("iframe");
             iframe.src = url;
-            iframe.sandbox.value = "allow-scripts allow-same-origin";
+            iframe.id = info.clientUuid;
             iframeContainer.appendChild(iframe);
 
             let removeClientButton = document.createElement("button");
