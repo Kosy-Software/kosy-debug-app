@@ -44,7 +44,7 @@ export interface ClientInfo {
 }
 
 export interface InitialInfo {
-    /// Information about all clients present
+    /// Information about all clients that are currently participating in the integration
     clients: { [clientUuid: string]: ClientInfo };
     /// The current client's identifier
     currentClientUuid: string;
@@ -74,7 +74,7 @@ export interface ClientHasJoined {
     payload: ClientInfo
 }
 
-export type ServerToClientMessage<T> =
+export type KosyToIntegrationMessage<T> =
     | ReceiveInitialInfo
     | ClientHasJoined
     | ClientHasLeft
@@ -90,6 +90,6 @@ export interface RelayMessage<T> {
     payload: T
 }
 
-export type ClientToServerMessage<T> =
+export type IntegrationToKosyMessage<T> =
     | ReadyAndListening
     | RelayMessage<T>

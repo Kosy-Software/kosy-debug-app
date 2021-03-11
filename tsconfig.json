@@ -8,6 +8,6 @@
         "module": "ES6"
     },
     "files": [
-      "debugger.ts"
+      "app.ts"
     ]
 }
