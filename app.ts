@@ -1,6 +1,6 @@
 /// <reference types="./frameworkmessages" />
 
-module Kosy {
+module Kosy.Debugger {
     //settings.json as a type
     interface StartupParameters {
         "integration-url": string
@@ -33,7 +33,7 @@ module Kosy {
         roomName: "TestRoom"
     }
 
-    export class KosyDebugger {
+    export class App {
         //A collection of all clients
         private clients: Array<KosyClient> = [];
 
@@ -214,4 +214,4 @@ module Kosy {
 //Fetches the settings, then starts the debugger
 fetch("settings.json")
 .then(response => response.json())
-.then(json => new Kosy.KosyDebugger().start(json));
+.then(json => new Kosy.Debugger.App().start(json));
