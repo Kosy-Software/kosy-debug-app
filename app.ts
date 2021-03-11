@@ -127,24 +127,25 @@ module Kosy.Debugger {
 
         //This function finds an unclaimed seat at a kosy table
         private findUnclaimedSeatNumber(table: Table): number {
-            let seatIsOccupied = new Array(table.numberOfSeats);
+            //Using this array as an array that starts at 1 in stead of 0 to make the logic more readable.
+            let seatIsOccupied = new Array(table.numberOfSeats + 1);
 
             this.clients.forEach(client => {
                 //If the client is seated at a table
                 switch (client.info.clientLocation.type) {
                     case "seated-at-table":
                         //Sets the seat as "occupied"
-                        seatIsOccupied[client.info.clientLocation.seatNumber - 1] = true;
+                        seatIsOccupied[client.info.clientLocation.seatNumber] = true;
                         break;
                     default:
                         break;
                 }
             });
 
-            //Goes through the table's seats and tries to find an unclaimed one
-            for (let seatNumber = 0; seatNumber < table.numberOfSeats; seatNumber++) {
+            //Goes through the table's seat numbers and tries to find an unclaimed one
+            for (let seatNumber = 1; seatNumber <= table.numberOfSeats; seatNumber++) {
                 if (!seatIsOccupied[seatNumber]) {
-                    return seatNumber + 1;
+                    return seatNumber;
                 }
             }
             
