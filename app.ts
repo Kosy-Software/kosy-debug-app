@@ -112,7 +112,7 @@ module Kosy {
         private broadcastMessage (message: IntegrationClientMessage) {
             let receiveMessage: ReceiveMessage<IntegrationClientMessage> = {
                 type: "receive-message",
-                payload: message.payload
+                payload: message
             }
             this.clients.forEach(client => this.sendMessage(receiveMessage, client));
         }
