@@ -59,9 +59,9 @@ module Kosy {
             });
 
             //Goes through the table's seats and tries to find an unclaimed one
-            for (let index = 0; index < seatIsOccupied.length; index++) {
-                if (!seatIsOccupied[index]) {
-                    return index + 1;
+            for (let seatNumber = 0; seatNumber < table.numberOfSeats; seatNumber++) {
+                if (!seatIsOccupied[seatNumber]) {
+                    return seatNumber + 1;
                 }
             }
             
