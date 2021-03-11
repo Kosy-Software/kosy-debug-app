@@ -4,9 +4,10 @@
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
-        "sourceMap": false
+        "sourceMap": false,
+        "module": "ES6"
     },
     "files": [
-      "app.ts"
+      "debugger.ts"
     ]
 }

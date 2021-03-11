@@ -1,4 +1,4 @@
-/// <reference path="messages.d.ts" />
+import * as KosyFrameWork from "./framework";
 
 module Kosy {
     class StartupParameters {
@@ -6,26 +6,26 @@ module Kosy {
     }
 
     type KosyClient = { 
-        info: ClientInfo,
+        info: KosyFrameWork.ClientInfo,
         iframe: HTMLIFrameElement
     }
 
     type ClientMessage = any;
 
-    const defaultBuilding: Building = {
+    const defaultBuilding: KosyFrameWork.Building = {
         buildingKey: "TestBuilding",
         buildingName: "TestBuilding"
     }
-    const defaultFloor: Floor = {
+    const defaultFloor: KosyFrameWork.Floor = {
         floorUuid: "TestFloor",
         floorName: "TestFloor"
     }
-    const defaultTable: Table = {
+    const defaultTable: KosyFrameWork.Table = {
         tableUuid: "TestTable",
         tableName: "TestTable",
         numberOfSeats: 999
     }
-    const defaultRoom: Room = {
+    const defaultRoom: KosyFrameWork.Room = {
         roomUuid: "TestRoom",
         roomName: "TestRoom"
     }
@@ -44,7 +44,7 @@ module Kosy {
             console.log(...message);
         }
 
-        private findUnclaimedSeatNumber(table: Table): number {
+        private findUnclaimedSeatNumber(table: KosyFrameWork.Table): number {
             let seatsArray = new Array(table.numberOfSeats);
             this.clients.forEach(client => {
                 switch (client.info.clientLocation.type) {
@@ -63,26 +63,26 @@ module Kosy {
             throw "No more available unclaimed seats...";
         }
 
-        private createClientHasJoinedMessage (kosyClient: KosyClient): ClientHasJoined {
+        private createClientHasJoinedMessage (kosyClient: KosyClient): KosyFrameWork.ClientHasJoined {
             return {
                 type: "client-has-joined",
                 payload: kosyClient.info
             }
         }
 
-        private createClientHasLeftMessage (kosyClient: KosyClient): ClientHasLeft {
+        private createClientHasLeftMessage (kosyClient: KosyClient): KosyFrameWork.ClientHasLeft {
             return {
                 type: "client-has-left",
                 payload: kosyClient.info
             }
         }
 
-        private createReceiveInitialInfoMessage (kosyClient: KosyClient, initializer: KosyClient): ReceiveInitialInfo {
+        private createReceiveInitialInfoMessage (kosyClient: KosyClient, initializer: KosyClient): KosyFrameWork.ReceiveInitialInfo {
             return {
                 type: "receive-initial-info",
                 payload: {
                     clients: 
-                        this.clients.reduce((map: { [clientUuid: string]: ClientInfo }, nextValue) => { 
+                        this.clients.reduce((map: { [clientUuid: string]: KosyFrameWork.ClientInfo }, nextValue) => { 
                             map[nextValue.info.clientUuid] = nextValue.info;
                             return map;
                         }, {}),
@@ -92,18 +92,18 @@ module Kosy {
             }
         }
 
-        private createReceiveMessage (payload: ClientMessage): ReceiveMessage<ClientMessage> {
+        private createReceiveMessage (payload: ClientMessage): KosyFrameWork.ReceiveMessage<ClientMessage> {
             return {
                 type: "receive-message",
                 payload
             }
         }
 
-        public sendOutgoingMessage (message: ServerToClientMessage<ClientMessage>, fromClient: KosyClient) {
+        public sendOutgoingMessage (message: KosyFrameWork.ServerToClientMessage<ClientMessage>, fromClient: KosyClient) {
             fromClient.iframe.contentWindow.postMessage(message, "*");
         }
 
-        public receiveIncomingMessage (source: MessageEventSource, message: ClientToServerMessage<ClientMessage>) {
+        public receiveIncomingMessage (source: MessageEventSource, message: KosyFrameWork.ClientToServerMessage<ClientMessage>) {
             switch (message.type) {
                 case "ready-and-listening":
                     this.log("Kosy received: Ready and listening.");
@@ -139,7 +139,7 @@ module Kosy {
             this.clients.push(kosyClient);
         }
 
-        private generateClientInfo(): ClientInfo {
+        private generateClientInfo(): KosyFrameWork.ClientInfo {
             let clientId = Date.now().toString();
             return {
                 clientUuid: clientId,
@@ -163,6 +163,8 @@ module Kosy {
             let iframe = document.createElement("iframe");
             iframe.src = url;
             iframe.id = info.clientUuid;
+            iframe.width = "700px";
+            iframe.height = "400px";
             iframeContainer.appendChild(iframe);
 
             let removeClientButton = document.createElement("button");
@@ -178,7 +180,7 @@ module Kosy {
         }
 
         public start (params: StartupParameters): void {
-            window.addEventListener("message", (event: MessageEvent<ClientToServerMessage<ClientMessage>>) => {
+            window.addEventListener("message", (event: MessageEvent<KosyFrameWork.ClientToServerMessage<ClientMessage>>) => {
                 this.receiveIncomingMessage(event.source, event.data);
             });
             this.addClientButton.onclick = event => {
