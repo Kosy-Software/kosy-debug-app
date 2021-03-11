@@ -64,7 +64,7 @@ module Kosy.Debugger {
                         this.sendInitialInfoMessage(kosyClient);
 
                         //Then send to the other integration clients that another integration client has joined
-                        this.sendClientHasJoinedMessages(kosyClient);
+                        this.broadcastClientHasJoinedMessage(kosyClient);
                     } else {
                         //This SHOULD not occur, but, yea... javascript :D
                         throw "Could not find the message's source, this should not occur?"
@@ -73,7 +73,7 @@ module Kosy.Debugger {
                 case "relay-message":
                     //Broadcasts the message to all clients
                     this.log("Kosy received: Relay message: ", message.payload);
-                    this.broadcastMessage(message.payload)
+                    this.broadcastIntegrationMessage(message.payload)
                     break;
                 default:
                     //Ignore unknown messages
@@ -167,42 +167,46 @@ module Kosy.Debugger {
                     initializerClientUuid: this.clients[0].info.clientUuid
                 }
             }
-            this.sendMessage(initialInfo, kosyClient);
+            this.sendKosyMessageToIntegrationClient(initialInfo, kosyClient);
         }
 
         //Sends a message from the debugger (kosy) to an integration
-        public sendMessage (message: KosyToIntegrationMessage<IntegrationClientMessage>, toClient: KosyClient) {
-            toClient.iframe.contentWindow.postMessage(message, "*");
+        public sendKosyMessageToIntegrationClient (message: KosyToIntegrationMessage<IntegrationClientMessage>, toClient: KosyClient) {
+            toClient.iframe.contentWindow.postMessage(message, toClient.iframe.src);
         }
 
         //Sends client has joined messages to all registered clients
-        private sendClientHasJoinedMessages(kosyClient: KosyClient) {
+        private broadcastClientHasJoinedMessage (kosyClient: KosyClient) {
             let clientHasJoinedMessage: ClientHasJoined = {
                 type: "client-has-joined",
                 payload: kosyClient.info
             }
-            this.clients.forEach(client => this.sendMessage(clientHasJoinedMessage, client));
+            this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(clientHasJoinedMessage, client));
         }
 
         //Broadcasts an integration's message to all clients
-        private broadcastMessage (message: IntegrationClientMessage) {
+        private broadcastIntegrationMessage (message: IntegrationClientMessage) {
             let receiveMessage: ReceiveMessage<IntegrationClientMessage> = {
                 type: "receive-message",
                 payload: message
             }
-            this.clients.forEach(client => this.sendMessage(receiveMessage, client));
+            this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(receiveMessage, client));
         }
 
-        //Removes a client from the debugger: 
-        //-> sends "client has left" messages to all other clients and removes its iframe
+        //Removes a client from the debugger, broadcasts "client has left" and removes the client from the DOM
         private removeClient(client: KosyClient): void {
             this.clients = this.clients.filter(existing => existing != client);
+            this.broadcastClientHasLefMessage(client);
+            client.iframe.parentElement.remove();
+        }
+
+        //Broadcasts client has left message to all clients
+        private broadcastClientHasLefMessage(client: KosyClient): void {
             let clientHasLeftMessage: ClientHasLeft = {
                 type: "client-has-left",
                 payload: client.info
             }
-            this.clients.forEach(notRemovedClient => this.sendMessage(clientHasLeftMessage, notRemovedClient));
-            client.iframe.parentElement.remove();
+            this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(clientHasLeftMessage, client));
         }
 
         private log (...message: any[]) {
