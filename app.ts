@@ -1,5 +1,5 @@
 import * as KosyFrameWork from "./framework";
-import { ReceiveInitialInfo, ClientHasJoined, ReceiveMessage } from './framework';
+import { ReceiveInitialInfo, ClientHasJoined, ReceiveMessage, ClientHasLeft } from './framework';
 
 module Kosy {
     //settings.json as a type
@@ -38,83 +38,16 @@ module Kosy {
         //A collection of all clients
         private clients: Array<KosyClient> = [];
 
-        private log (...message: any[]) {
-            console.log(...message);
-        }
-
-        //This function finds an unclaimed seat at a kosy table
-        private findUnclaimedSeatNumber(table: KosyFrameWork.Table): number {
-            let seatIsOccupied = new Array(table.numberOfSeats);
-
-            this.clients.forEach(client => {
-                //If the client is seated at a table
-                switch (client.info.clientLocation.type) {
-                    case "seated-at-table":
-                        //Sets the seat as "occupied"
-                        seatIsOccupied[client.info.clientLocation.seatNumber - 1] = true;
-                        break;
-                    default:
-                        break;
-                }
+        //Starts the debugger
+        public start (params: StartupParameters): void {
+            //Sets up the message listener to listen for incoming messages
+            window.addEventListener("message", (event: MessageEvent<KosyFrameWork.IntegrationToKosyMessage<IntegrationClientMessage>>) => {
+                this.receiveIncomingMessage(event.data, event.source);
             });
-
-            //Goes through the table's seats and tries to find an unclaimed one
-            for (let seatNumber = 0; seatNumber < table.numberOfSeats; seatNumber++) {
-                if (!seatIsOccupied[seatNumber]) {
-                    return seatNumber + 1;
-                }
+            //Sets up the "add-client" button for onclick events
+            (document.getElementById("add-client") as HTMLButtonElement).onclick = event => {
+                this.addNewClient (params["integration-url"]);
             }
-            
-            //If no seat was found, throw an exception?
-            throw "No more available unclaimed seats...";
-        }
-
-        //Sends client has joined messages to all registered clients
-        private sendClientHasJoinedMessages(kosyClient: KosyClient) {
-            let clientHasJoinedMessage: ClientHasJoined = {
-                type: "client-has-joined",
-                payload: kosyClient.info
-            }
-            this.clients.forEach(client => this.sendMessage(clientHasJoinedMessage, client));
-        }
-
-        private createClientHasLeftMessage (kosyClient: KosyClient): KosyFrameWork.ClientHasLeft {
-            return {
-                type: "client-has-left",
-                payload: kosyClient.info
-            }
-        }
-
-        //Sends initialization info the kosy client
-        private sendInitialInfoMessage (kosyClient: KosyClient) {
-            let initialInfo: ReceiveInitialInfo = {
-                type: "receive-initial-info",
-                payload: {
-                    clients:
-                        //starts with an empty object, then fills the object with { "client identifier": client info }
-                        this.clients.reduce((map: { [clientUuid: string]: KosyFrameWork.ClientInfo }, nextValue) => { 
-                            map[nextValue.info.clientUuid] = nextValue.info;
-                            return map;
-                        }, {}),
-                    currentClientUuid: kosyClient.info.clientUuid,
-                    initializerClientUuid: this.clients[0].info.clientUuid
-                }
-            }
-            this.sendMessage(initialInfo, kosyClient);
-        }
-
-        //Sends a message from the debugger (kosy) to an integration
-        public sendMessage (message: KosyFrameWork.KosyToIntegrationMessage<IntegrationClientMessage>, fromClient: KosyClient) {
-            fromClient.iframe.contentWindow.postMessage(message, "*");
-        }
-
-        //Broadcasts an integration's message to all clients
-        private broadcastMessage (message: IntegrationClientMessage) {
-            let receiveMessage: ReceiveMessage<IntegrationClientMessage> = {
-                type: "receive-message",
-                payload: message
-            }
-            this.clients.forEach(client => this.sendMessage(receiveMessage, client));
         }
 
         //Receives a message from an integration to the debugger (kosy)
@@ -149,31 +82,6 @@ module Kosy {
             }
         }
 
-        //Removes a client from the debugger: 
-        //-> sends "client has left" messages to all other clients and removes its iframe
-        private removeClient(client: KosyClient): void {
-            this.clients = this.clients.filter(existing => existing != client);
-            this.clients.forEach(notRemovedClient => this.sendMessage(this.createClientHasLeftMessage (client), notRemovedClient));
-            client.iframe.parentElement.remove();
-        }
-
-        //Generates a somewhat random client that is seated at the table
-        private generateClientInfo(): KosyFrameWork.ClientInfo {
-            let clientId = Date.now().toString();
-            return {
-                clientUuid: clientId,
-                clientName: clientId,
-                clientLocation: {
-                    type: "seated-at-table",
-                    building: defaultBuilding,
-                    floor: defaultFloor,
-                    room: defaultRoom,
-                    table: defaultTable,
-                    seatNumber: this.findUnclaimedSeatNumber(defaultTable)
-                }
-            }
-        }
-
         //Adds a new client to the debugger
         private addNewClient (url: string): void {
             let info = this.generateClientInfo();
@@ -201,16 +109,105 @@ module Kosy {
             (document.getElementById("clients")).appendChild(iframeContainer);
         }
 
-        //Starts the debugger
-        public start (params: StartupParameters): void {
-            //Sets up the message listener to listen for incoming messages
-            window.addEventListener("message", (event: MessageEvent<KosyFrameWork.IntegrationToKosyMessage<IntegrationClientMessage>>) => {
-                this.receiveIncomingMessage(event.data, event.source);
-            });
-            //Sets up the "add-client" button for onclick events
-            (document.getElementById("add-client") as HTMLButtonElement).onclick = event => {
-                this.addNewClient (params["integration-url"]);
+        //Generates a somewhat random client that is seated at the table
+        private generateClientInfo(): KosyFrameWork.ClientInfo {
+            let clientId = Date.now().toString();
+            return {
+                clientUuid: clientId,
+                clientName: clientId,
+                clientLocation: {
+                    type: "seated-at-table",
+                    building: defaultBuilding,
+                    floor: defaultFloor,
+                    room: defaultRoom,
+                    table: defaultTable,
+                    seatNumber: this.findUnclaimedSeatNumber(defaultTable)
+                }
             }
+        }
+
+        //This function finds an unclaimed seat at a kosy table
+        private findUnclaimedSeatNumber(table: KosyFrameWork.Table): number {
+            let seatIsOccupied = new Array(table.numberOfSeats);
+
+            this.clients.forEach(client => {
+                //If the client is seated at a table
+                switch (client.info.clientLocation.type) {
+                    case "seated-at-table":
+                        //Sets the seat as "occupied"
+                        seatIsOccupied[client.info.clientLocation.seatNumber - 1] = true;
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            //Goes through the table's seats and tries to find an unclaimed one
+            for (let seatNumber = 0; seatNumber < table.numberOfSeats; seatNumber++) {
+                if (!seatIsOccupied[seatNumber]) {
+                    return seatNumber + 1;
+                }
+            }
+            
+            //If no seat was found, throw an exception?
+            throw "No more available unclaimed seats...";
+        }
+
+        //Sends initialization info the kosy client
+        private sendInitialInfoMessage (kosyClient: KosyClient) {
+            let initialInfo: ReceiveInitialInfo = {
+                type: "receive-initial-info",
+                payload: {
+                    clients:
+                        //starts with an empty object, then fills the object with { "client identifier": client info }
+                        this.clients.reduce((map: { [clientUuid: string]: KosyFrameWork.ClientInfo }, nextValue) => { 
+                            map[nextValue.info.clientUuid] = nextValue.info;
+                            return map;
+                        }, {}),
+                    currentClientUuid: kosyClient.info.clientUuid,
+                    initializerClientUuid: this.clients[0].info.clientUuid
+                }
+            }
+            this.sendMessage(initialInfo, kosyClient);
+        }
+
+        //Sends a message from the debugger (kosy) to an integration
+        public sendMessage (message: KosyFrameWork.KosyToIntegrationMessage<IntegrationClientMessage>, fromClient: KosyClient) {
+            fromClient.iframe.contentWindow.postMessage(message, "*");
+        }
+
+        //Sends client has joined messages to all registered clients
+        private sendClientHasJoinedMessages(kosyClient: KosyClient) {
+            let clientHasJoinedMessage: ClientHasJoined = {
+                type: "client-has-joined",
+                payload: kosyClient.info
+            }
+            this.clients.forEach(client => this.sendMessage(clientHasJoinedMessage, client));
+        }
+
+        //Broadcasts an integration's message to all clients
+        private broadcastMessage (message: IntegrationClientMessage) {
+            let receiveMessage: ReceiveMessage<IntegrationClientMessage> = {
+                type: "receive-message",
+                payload: message
+            }
+            this.clients.forEach(client => this.sendMessage(receiveMessage, client));
+        }
+
+        //Removes a client from the debugger: 
+        //-> sends "client has left" messages to all other clients and removes its iframe
+        private removeClient(client: KosyClient): void {
+            this.clients = this.clients.filter(existing => existing != client);
+            let clientHasLeftMessage: ClientHasLeft = {
+                type: "client-has-left",
+                payload: client.info
+            }
+            this.clients.forEach(notRemovedClient => this.sendMessage(clientHasLeftMessage, notRemovedClient));
+            client.iframe.parentElement.remove();
+        }
+
+        private log (...message: any[]) {
+            console.log(...message);
         }
     }
 }
