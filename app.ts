@@ -1,5 +1,4 @@
-import * as KosyFrameWork from "./framework";
-import { ReceiveInitialInfo, ClientHasJoined, ReceiveMessage, ClientHasLeft } from './framework';
+/// <reference types="./frameworkmessages" />
 
 module Kosy {
     //settings.json as a type
@@ -9,27 +8,27 @@ module Kosy {
 
     //Convenience interface that links a "client" to its "iframe"
     interface KosyClient { 
-        info: KosyFrameWork.ClientInfo,
+        info: ClientInfo,
         iframe: HTMLIFrameElement
     }
 
     //Represents "any" integration client's message
     type IntegrationClientMessage = any;
 
-    const defaultBuilding: KosyFrameWork.Building = {
+    const defaultBuilding: Building = {
         buildingKey: "TestBuilding",
         buildingName: "TestBuilding"
     }
-    const defaultFloor: KosyFrameWork.Floor = {
+    const defaultFloor: Floor = {
         floorUuid: "TestFloor",
         floorName: "TestFloor"
     }
-    const defaultTable: KosyFrameWork.Table = {
+    const defaultTable: Table = {
         tableUuid: "TestTable",
         tableName: "TestTable",
         numberOfSeats: 999
     }
-    const defaultRoom: KosyFrameWork.Room = {
+    const defaultRoom: Room = {
         roomUuid: "TestRoom",
         roomName: "TestRoom"
     }
@@ -41,7 +40,7 @@ module Kosy {
         //Starts the debugger
         public start (params: StartupParameters): void {
             //Sets up the message listener to listen for incoming messages
-            window.addEventListener("message", (event: MessageEvent<KosyFrameWork.IntegrationToKosyMessage<IntegrationClientMessage>>) => {
+            window.addEventListener("message", (event: MessageEvent<IntegrationToKosyMessage<IntegrationClientMessage>>) => {
                 this.receiveIncomingMessage(event.data, event.source);
             });
             //Sets up the "add-client" button for onclick events
@@ -51,7 +50,7 @@ module Kosy {
         }
 
         //Receives a message from an integration to the debugger (kosy)
-        public receiveIncomingMessage (message: KosyFrameWork.IntegrationToKosyMessage<IntegrationClientMessage>, source: MessageEventSource) {
+        public receiveIncomingMessage (message: IntegrationToKosyMessage<IntegrationClientMessage>, source: MessageEventSource) {
             switch (message.type) {
                 //If we've received the initial message
                 case "ready-and-listening":
@@ -110,7 +109,7 @@ module Kosy {
         }
 
         //Generates a somewhat random client that is seated at the table
-        private generateClientInfo(): KosyFrameWork.ClientInfo {
+        private generateClientInfo(): ClientInfo {
             let clientId = Date.now().toString();
             return {
                 clientUuid: clientId,
@@ -127,7 +126,7 @@ module Kosy {
         }
 
         //This function finds an unclaimed seat at a kosy table
-        private findUnclaimedSeatNumber(table: KosyFrameWork.Table): number {
+        private findUnclaimedSeatNumber(table: Table): number {
             let seatIsOccupied = new Array(table.numberOfSeats);
 
             this.clients.forEach(client => {
@@ -160,7 +159,7 @@ module Kosy {
                 payload: {
                     clients:
                         //starts with an empty object, then fills the object with { "client identifier": client info }
-                        this.clients.reduce((map: { [clientUuid: string]: KosyFrameWork.ClientInfo }, nextValue) => { 
+                        this.clients.reduce((map: { [clientUuid: string]: ClientInfo }, nextValue) => { 
                             map[nextValue.info.clientUuid] = nextValue.info;
                             return map;
                         }, {}),
@@ -172,7 +171,7 @@ module Kosy {
         }
 
         //Sends a message from the debugger (kosy) to an integration
-        public sendMessage (message: KosyFrameWork.KosyToIntegrationMessage<IntegrationClientMessage>, fromClient: KosyClient) {
+        public sendMessage (message: KosyToIntegrationMessage<IntegrationClientMessage>, fromClient: KosyClient) {
             fromClient.iframe.contentWindow.postMessage(message, "*");
         }
 

@@ -1,30 +1,30 @@
-export type IntegrationToKosyMessage<T> =
+type IntegrationToKosyMessage<T> =
     | ReadyAndListening
     | RelayMessage<T>
 
-export interface ReadyAndListening {
+interface ReadyAndListening {
     type: "ready-and-listening";
     payload: any; //not known yet
 }
 
-export interface RelayMessage<T> {
+interface RelayMessage<T> {
     type: "relay-message"
     payload: T
 }
 
-export type KosyToIntegrationMessage<T> =
+type KosyToIntegrationMessage<T> =
     | ReceiveInitialInfo
     | ClientHasJoined
     | ClientHasLeft
     | ReceiveMessage<T>
 
 /// Note: this message is also used when the client info has changed (e.g. seat number or name)
-export interface ReceiveInitialInfo {
+interface ReceiveInitialInfo {
     type: "receive-initial-info"
     payload: InitialInfo
 }
 
-export interface InitialInfo {
+interface InitialInfo {
     /// Information about all clients present
     clients: { [clientUuid: string]: ClientInfo };
     /// The current client's identifier
@@ -33,17 +33,17 @@ export interface InitialInfo {
     initializerClientUuid: string;
 }
 
-export interface ClientInfo {
+interface ClientInfo {
     clientUuid: string;
     clientName: string;
     clientLocation: ClientLocation;
 }
 
-export type ClientLocation =
+type ClientLocation =
     | SeatedAtTable
     | InPrivateConversation
 
-export interface SeatedAtTable {
+interface SeatedAtTable {
     type: "seated-at-table";
     building: Building;
     floor: Floor;
@@ -52,44 +52,44 @@ export interface SeatedAtTable {
     seatNumber: number;
 }
 
-export interface InPrivateConversation {
+interface InPrivateConversation {
     type: "in-private-conversation";
     conversationKey: string;
 }
 
-export interface Building {
+interface Building {
     buildingKey: string;
     buildingName: string;
 }
 
-export interface Floor {
+interface Floor {
     floorUuid: string;
     floorName: string
 }
 
-export interface Room {
+interface Room {
     roomUuid: string;
     roomName: string;
 }
 
-export interface Table {
+interface Table {
     tableUuid: string;
     tableName: string;
     numberOfSeats: number;
 }
 
 /// Note: this message is also used when the client info has changed (e.g. seat number or name)
-export interface ClientHasJoined {
+interface ClientHasJoined {
     type: "client-has-joined";
     payload: ClientInfo
 }
 
-export interface ClientHasLeft {
+interface ClientHasLeft {
     type: "client-has-left";
     payload: ClientInfo
 }
 
-export interface ReceiveMessage<T> {
+interface ReceiveMessage<T> {
     type: "receive-message";
     payload: T;
 }
