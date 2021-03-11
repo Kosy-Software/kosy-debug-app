@@ -171,8 +171,8 @@ module Kosy.Debugger {
         }
 
         //Sends a message from the debugger (kosy) to an integration
-        public sendMessage (message: KosyToIntegrationMessage<IntegrationClientMessage>, fromClient: KosyClient) {
-            fromClient.iframe.contentWindow.postMessage(message, "*");
+        public sendMessage (message: KosyToIntegrationMessage<IntegrationClientMessage>, toClient: KosyClient) {
+            toClient.iframe.contentWindow.postMessage(message, "*");
         }
 
         //Sends client has joined messages to all registered clients
