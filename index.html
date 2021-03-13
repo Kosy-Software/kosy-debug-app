@@ -3,12 +3,18 @@
     <head>
         <title>Kosy - Debugger</title>
         <meta charset="utf-8">
-        <script type="module" src="app.js" defer></script>
+        <script type="module" src="src/app.js" defer></script>
     </head>
     <body>
         <div>
             <button id="add-client">Click me to add another client</button>
         </div>
+        <template id="clientRoot">
+            <div style="display: inline-grid">
+                <iframe height="400px" width="700px"></iframe>
+                <button class="">Remove from table</button>
+            <div>
+        </template>
         <div id="clients"></div>
     </body>
 </html>
