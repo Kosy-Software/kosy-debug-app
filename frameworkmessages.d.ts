@@ -42,7 +42,6 @@ declare namespace Kosy {
 
     type ClientLocation =
         | SeatedAtTable
-        | InPrivateConversation
 
     interface SeatedAtTable {
         type: "seated-at-table";
@@ -51,11 +50,6 @@ declare namespace Kosy {
         room: Room;
         table: Table;
         seatNumber: number;
-    }
-
-    interface InPrivateConversation {
-        type: "in-private-conversation";
-        conversationKey: string;
     }
 
     interface Building {
