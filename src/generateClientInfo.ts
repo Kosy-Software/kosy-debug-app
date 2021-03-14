@@ -1,4 +1,4 @@
-import { Building, Floor, Table, Room, ClientInfo } from './src/lib/kosyclient';
+import { Building, Floor, Table, Room, ClientInfo } from './lib/kosyclient';
 
 const defaultBuilding: Building = {
     buildingKey: "TestBuilding",

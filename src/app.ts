@@ -1,7 +1,7 @@
 import { ClientInfo } from './lib/kosyclient';
 import * as KosyMessages from './lib/kosymessages';
 import { renderKosyClient } from './views/renderKosyClient';
-import { generateClientInfo } from '../generateClientInfo';
+import { generateClientInfo } from './generateClientInfo';
 
 module Kosy.Debugger {
     //settings.json as a type
