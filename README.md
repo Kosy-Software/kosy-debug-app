@@ -11,5 +11,9 @@ Add a settings.json file (don't check it in! it is .gitignore so every kosy app 
 ## to compile and run the app
 1) When using visual studio code, install the live server plugin for ease of access.
 2) Install the latest version of the typescript compiler (https://www.typescriptlang.org/download)
-3) Open a command line tool and enter the following command: "tsc" (without quotes)
+3) Open a command line tool and enter the following command: "tsc --watch" (without quotes)
 4) Press the Go Live button.
+
+## to shut down the app
+1) Click the live server button (should read something like: Port: 5501)
+2) Press Ctrl+C to shut down the typescript watcher.
