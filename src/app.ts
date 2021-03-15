@@ -82,8 +82,8 @@ module Kosy.Debugger {
                     this.log("Relay message: ", message.payload);
                     let receiveMessage: KosyMessages.ReceiveMessage<IntegrationMessage> = {
                         type: "receive-message",
-                        payload: message
-                    }
+                        payload: message.payload
+                    };
                     this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(receiveMessage, client));
                     break;
                 case "end-integration":
