@@ -99,7 +99,7 @@ module Kosy.Debugger {
         //Adds a new client to the debugger
         private addNewClient (url: string): void {
             let info = generateClientInfo (this.clients.map(client => client.info));
-            let iframe = renderKosyClient (info, url);
+            let iframe = renderKosyClient (info, url, (clientUuid) => this.removeClient(clientUuid));
 
             let kosyClient = { info, iframe, initialized: false };
             this.clients.push(kosyClient);
@@ -109,8 +109,6 @@ module Kosy.Debugger {
         private removeClient (clientUuid: string): void {
             let removedClient = this.clients.find(existing => existing.info.clientUuid == clientUuid);
             this.clients = this.clients.filter(existing => existing != removedClient);
-            removedClient.iframe.parentElement.remove();
-
             let clientHasLeftMessage: KosyMessages.ClientHasLeft = {
                 type: "client-has-left",
                 payload: removedClient.info
