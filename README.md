@@ -6,7 +6,6 @@ Add a settings.json file (don't check it in! it is .gitignore so every kosy app 
 
 ```Typescript
 {
-    "integration-url": "url to your integration here",
     "devServer": {
         "port": "The port you want the development server to run on",
         "host": "The HOST you want the development server to run on",
