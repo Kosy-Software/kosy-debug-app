@@ -5,15 +5,22 @@
         <meta charset="utf-8">
     </head>
     <body>
-        <div>
-            <button id="add-client">Click me to add another client</button>
-        </div>
         <template id="clientRoot">
             <div style="display: inline-grid">
                 <iframe height="400px" width="700px"></iframe>
                 <button class="">Remove from table</button>
             <div>
         </template>
+        <template id="setupRoot">
+            <fieldset>
+                <legend>Integration url</legend>
+                <input id="integration-url" style="width: 100%" />
+            </fieldset>
+        </template>
+        <div>
+            <button id="setup">Click me to change the integration url</button>
+            <button id="add-client">Click me to add another client</button>
+        </div>        
         <div id="clients"></div>
     </body>
 </html>

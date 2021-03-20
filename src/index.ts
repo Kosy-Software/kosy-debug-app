@@ -2,14 +2,10 @@ import { ClientInfo } from './lib/kosyclient';
 import * as KosyMessages from './lib/kosymessages';
 import { renderKosyClient } from './views/renderKosyClient';
 import { generateClientInfo } from './generateClientInfo';
-import settings from "./../settings.json";
+import { DebuggerState } from './lib/debuggerState';
+import { renderSetup } from './views/renderSetup';
 
 module Kosy.Debugger {
-    //settings.json as a type
-    interface StartupParameters {
-        "integration-url": string
-    }
-
     //Convenience interface that links a "client" to its "iframe"
     interface KosyClient { 
         info: ClientInfo,
@@ -24,17 +20,28 @@ module Kosy.Debugger {
 
     export class App {
         //A collection of all clients
+        private state: DebuggerState
         private clients: Array<KosyClient> = [];
 
         //Starts the debugger
-        public start (params: StartupParameters): void {
+        public start (initialState: DebuggerState): void {
+            this.state = initialState;
             //Sets up the message listener to listen for incoming messages
             window.addEventListener("message", (event: MessageEvent<KosyMessages.IntegrationToKosyMessage<IntegrationState, IntegrationMessage>>) => {
                 this.receiveIncomingMessage(event.data, event.source);
             });
             //Sets up the "add-client" button for onclick events
             (document.getElementById("add-client") as HTMLButtonElement).onclick = event => {
-                this.addNewClient (params["integration-url"]);
+                if (this.state['integration-url']) {
+                    this.addNewClient (this.state["integration-url"]);
+                } else {
+                    alert ("No integration url found. Run setup first.")
+                }
+            }
+            (document.getElementById("setup") as HTMLButtonElement).onclick = async event => {
+                let newState = await renderSetup (this.state);
+                this.state = newState;
+                localStorage.setItem("state", JSON.stringify(newState));
             }
         }
 
@@ -147,5 +154,6 @@ module Kosy.Debugger {
             console.log("Kosy received: ", ...message);
         }
     }
-    new Kosy.Debugger.App().start(settings);
+    const initialState = JSON.parse(localStorage.getItem("state") || "{}");
+    new Kosy.Debugger.App().start(initialState);
 }
