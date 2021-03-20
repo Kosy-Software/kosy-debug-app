@@ -1,7 +1,8 @@
 import { ClientInfo } from './lib/kosyclient';
 import * as KosyMessages from './lib/kosymessages';
-import { renderKosyClient } from './views/renderKosyClient.js';
-import { generateClientInfo } from './generateClientInfo.js';
+import { renderKosyClient } from './views/renderKosyClient';
+import { generateClientInfo } from './generateClientInfo';
+import settings from "./../settings.json";
 
 module Kosy.Debugger {
     //settings.json as a type
@@ -146,9 +147,5 @@ module Kosy.Debugger {
             console.log("Kosy received: ", ...message);
         }
     }
+    new Kosy.Debugger.App().start(settings);
 }
-
-//Fetches the settings, then starts the debugger
-fetch("settings.json")
-.then(response => response.json())
-.then(json => new Kosy.Debugger.App().start(json));

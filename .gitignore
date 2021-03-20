@@ -1,3 +1,7 @@
 settings.json
-*.js
+/node_modules
+/.vs
 /.vscode
+/ssl
+/dist
+/src/**/**.js

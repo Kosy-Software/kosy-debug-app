@@ -1,5 +1,5 @@
 import { Building, Floor, Table, Room, ClientInfo } from './lib/kosyclient';
-import { listOfRandomNames } from './lib/listOfRandomNames.js';
+import { listOfRandomNames } from './lib/listOfRandomNames';
 
 const defaultBuilding: Building = {
     buildingKey: "TestBuilding",
