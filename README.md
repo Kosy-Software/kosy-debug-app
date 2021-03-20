@@ -4,6 +4,7 @@ This app will emulate the behavior of the kosy p2p protocol for development purp
 ## to configure this app
 Add a settings.json file (don't check it in! it is .gitignore so every kosy app developer can start using this code). Then add in the following json:
 
+```Typescript
 {
     "integration-url": "url to your integration here",
     "devServer": {
@@ -16,6 +17,7 @@ Add a settings.json file (don't check it in! it is .gitignore so every kosy app 
         }
     }
 }
+```
 
 ## Install node package manager
 To run the code, you'll need a bunch of packages installed. The package manger we've chosen to use is node package manager (npm).
