@@ -30,9 +30,10 @@ jobs:
         with:
           name: "settings.json"
           json: '{ "integration-url": "https://kosy-software.github.io/google-drive-table-app/" }' # TODO.... alter the app so you can set it up for multiple apps
-      - name: tsc
-        uses: icrawl/action-tsc@v1 # Performs the typescript compile
-           
+          
+      - name: TSC actions
+        uses: stepek/tsc-action@1.0.0
+        
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
