@@ -31,16 +31,10 @@ jobs:
           name: "settings.json"
           json: '{ "integration-url": "https://kosy-software.github.io/google-drive-table-app/" }' # TODO.... alter the app so you can set it up for multiple apps
       
-      # required for typescript install
-      - name: install node v12
-        uses: actions/setup-node@v1
-        with:
-          node-version: 12
-      - name: yarn install
-        run: yarn install
-      # the actual typescript install...
-      - name: tsc
-        uses: icrawl/action-tsc@v1        
+      - name: Install and run typescript 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+        run: |
+          npm install typescript -g
+          npx tsc   
       
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
