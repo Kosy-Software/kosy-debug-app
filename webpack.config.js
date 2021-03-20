@@ -6,7 +6,8 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const fs = require("fs");
-const devServerSettings = require("./settings.json").devServer || {};
+const optionalRequire = require("optional-require")(require);
+const devServerSettings = (optionalRequire("./settings.json") || { devServer: {} }).devServer;
 
 const getDevServerSslSettings = () => {
     if (!devServerSettings.ssl) return false;
