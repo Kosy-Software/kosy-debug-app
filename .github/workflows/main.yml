@@ -24,16 +24,24 @@ jobs:
         with:
           persist-credentials: false
  
-      - name: Set google credentials
-        id: add-google-credentials
+      - name: Create settings file
+        id: create-settings-json
         uses: jsdaniell/create-json@1.1.2
         with:
           name: "settings.json"
           json: '{ "integration-url": "https://kosy-software.github.io/google-drive-table-app/" }' # TODO.... alter the app so you can set it up for multiple apps
-          
-      - name: TSC actions
-        uses: stepek/tsc-action@1.0.0
-        
+      
+      # required for typescript install
+      - name: install node v12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: yarn install
+        run: yarn install
+      # the actual typescript install...
+      - name: tsc
+        uses: icrawl/action-tsc@v1        
+      
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@4.1.0
         with:
