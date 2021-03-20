@@ -114,6 +114,8 @@ module Kosy.Debugger {
                 payload: removedClient.info
             }
             this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(clientHasLeftMessage, client));
+            //Not the safest way to do this... but it works.
+            removedClient.iframe.parentElement.remove();
         }
 
         //Sends initialization info the kosy client

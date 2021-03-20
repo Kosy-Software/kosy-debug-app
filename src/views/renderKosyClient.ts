@@ -11,7 +11,6 @@ export function renderKosyClient (clientInfo: ClientInfo, url: string, onClientR
     let removeClientButton = templateClone.querySelector("button") as HTMLButtonElement;
     removeClientButton.onclick = event => {
         onClientRemoved(clientInfo.clientUuid);
-        iframe.parentElement.remove();
     }
     document.getElementById("clients").appendChild(templateClone);
     return iframe;
