@@ -4,6 +4,7 @@ import { renderKosyClient } from './views/renderKosyClient';
 import { generateClientInfo } from './generateClientInfo';
 import { DebuggerState } from './lib/debuggerState';
 import { renderSetup } from './views/renderSetup';
+import { storeState, retrieveState } from './lib/stateStorage';
 
 module Kosy.Debugger {
     //Convenience interface that links a "client" to its "iframe"
@@ -41,18 +42,7 @@ module Kosy.Debugger {
             (document.getElementById("setup") as HTMLButtonElement).onclick = async event => {
                 let newState = await renderSetup (this.state);
                 this.state = newState;
-                localStorage.setItem("state", JSON.stringify(newState));
-
-                let searchParams = new URLSearchParams(window.location.search);
-                searchParams.set("state", JSON.stringify(newState));
-                let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
-                if (window.history.pushState) {
-                    //Sets the state url onto the scope
-                    window.history.pushState({path: newurl}, '', newurl);
-                } else {
-                    //Fallback for older browsers
-                    window.location.href = newurl;
-                }
+                storeState(newState);
             }
         }
 
@@ -166,8 +156,5 @@ module Kosy.Debugger {
         }
     }
 
-    let searchParams = new URLSearchParams(window.location.search);
-    let initialStateString = searchParams.get("state") ?? localStorage.getItem("state");
-    let initialState: DebuggerState = initialStateString ? JSON.parse(initialStateString) : {};
-    new Kosy.Debugger.App().start(initialState);
+    new Kosy.Debugger.App().start(retrieveState());
 }
