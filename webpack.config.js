@@ -97,6 +97,7 @@ module.exports = (env, options) => {
             hot: true,
             publicPath: "/",
             contentBase: resolve(CONFIG.assetsDir),
+            contentBasePublicPath: "/assets",
             host: CONFIG.devServerHost,
             port: CONFIG.devServerPort
         },
