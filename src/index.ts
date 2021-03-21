@@ -42,6 +42,17 @@ module Kosy.Debugger {
                 let newState = await renderSetup (this.state);
                 this.state = newState;
                 localStorage.setItem("state", JSON.stringify(newState));
+
+                let searchParams = new URLSearchParams(window.location.search);
+                searchParams.set("state", JSON.stringify(newState));
+                let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
+                if (window.history.pushState) {
+                    //Sets the state url onto the scope
+                    window.history.pushState({path: newurl}, '', newurl);
+                } else {
+                    //Fallback for older browsers
+                    window.location.href = newurl;
+                }
             }
         }
 
@@ -154,6 +165,9 @@ module Kosy.Debugger {
             console.log("Kosy received: ", ...message);
         }
     }
-    const initialState = JSON.parse(localStorage.getItem("state") || "{}");
+
+    let searchParams = new URLSearchParams(window.location.search);
+    let initialStateString = searchParams.get("state") ?? localStorage.getItem("state");
+    let initialState: DebuggerState = initialStateString ? JSON.parse(initialStateString) : {};
     new Kosy.Debugger.App().start(initialState);
 }
