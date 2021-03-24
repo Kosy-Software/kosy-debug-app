@@ -1,5 +1,5 @@
-import { ClientInfo } from './lib/kosyclient';
-import * as KosyMessages from './lib/kosymessages';
+import { ClientInfo } from '@kosy/kosy-app-api/types';
+import * as KosyMessages from '@kosy/kosy-app-api/messages';
 import { renderKosyClient } from './views/renderKosyClient';
 import { generateClientInfo } from './generateClientInfo';
 import { DebuggerState } from './lib/debuggerState';
@@ -14,10 +14,10 @@ module Kosy.Debugger {
         iframe: HTMLIFrameElement
     }
 
-    //Represents "any" integration client's state type
-    type IntegrationState = any;
-    //Represents "any" integration client's message type
-    type IntegrationMessage = any;
+    //Represents "any" app client's state type
+    type AppState = any;
+    //Represents "any" app client's message type
+    type AppMessage = any;
 
     export class App {
         //A collection of all clients
@@ -28,15 +28,15 @@ module Kosy.Debugger {
         public start (initialState: DebuggerState): void {
             this.state = initialState;
             //Sets up the message listener to listen for incoming messages
-            window.addEventListener("message", (event: MessageEvent<KosyMessages.IntegrationToKosyMessage<IntegrationState, IntegrationMessage>>) => {
+            window.addEventListener("message", (event: MessageEvent<KosyMessages.AppToKosyMessage<AppState, AppMessage>>) => {
                 this.receiveIncomingMessage(event.data, event.source);
             });
             //Sets up the "add-client" button for onclick events
             (document.getElementById("add-client") as HTMLButtonElement).onclick = event => {
-                if (this.state['integration-url']) {
-                    this.addNewClient (this.state["integration-url"]);
+                if (this.state['app-url']) {
+                    this.addNewClient (this.state["app-url"]);
                 } else {
-                    alert ("No integration url found. Run setup first.")
+                    alert ("No app url found. Run setup first.")
                 }
             }
             (document.getElementById("setup") as HTMLButtonElement).onclick = async event => {
@@ -46,29 +46,29 @@ module Kosy.Debugger {
             }
         }
 
-        //Receives a message from an integration to the debugger (kosy)
-        public receiveIncomingMessage (message: KosyMessages.IntegrationToKosyMessage<IntegrationState, IntegrationMessage>, source: MessageEventSource) {
+        //Receives a message from an app to the debugger (kosy)
+        public receiveIncomingMessage (message: KosyMessages.AppToKosyMessage<AppState, AppMessage>, source: MessageEventSource) {
             switch (message.type) {
                 //If we've received the initial message
                 case "ready-and-listening":
                     this.log("Ready and listening.");
-                    //Figure out which integration client sent it
+                    //Figure out which app client sent it
                     let kosyClients = this.clients.filter(client => client.iframe.contentWindow === source);
                     if (kosyClients.length === 1) {
                         let kosyClient = kosyClients[0];
 
-                        //Broadcast to others that a new integration client has joined
+                        //Broadcast to others that a new app client has joined
                         let clientHasJoinedMessage: KosyMessages.ClientHasJoined = {
                             type: "client-has-joined",
                             payload: kosyClient.info
                         }
                         this.clients.forEach(client => {
-                            this.sendKosyMessageToIntegrationClient(clientHasJoinedMessage, client) 
+                            this.sendKosyMessageToAppClient(clientHasJoinedMessage, client) 
                         });
 
-                        //Request the integration's state from the "host"
-                        this.sendKosyMessageToIntegrationClient({ 
-                            type: "request-integration-state",
+                        //Request the app's state from the "host"
+                        this.sendKosyMessageToAppClient({ 
+                            type: "request-app-state",
                             payload: {} 
                         }, this.clients[0])
                     } else {
@@ -76,9 +76,9 @@ module Kosy.Debugger {
                         throw "Could not find the message's source, this should not occur?"
                     }
                     break;
-                case "receive-integration-state":
-                    this.log("Kosy received the integration's current state");
-                    //Send the integration client its initial info
+                case "receive-app-state":
+                    this.log("Kosy received the app's current state");
+                    //Send the app client its initial info
                     this.clients
                         .filter(client => !client.initialized)
                         .forEach(client => {
@@ -89,14 +89,14 @@ module Kosy.Debugger {
                 case "relay-message":
                     //Broadcasts the message to all clients
                     this.log("Relay message: ", message.payload);
-                    let receiveMessage: KosyMessages.ReceiveMessage<IntegrationMessage> = {
+                    let receiveMessage: KosyMessages.ReceiveMessage<AppMessage> = {
                         type: "receive-message",
                         payload: message.payload
                     };
-                    this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(receiveMessage, client));
+                    this.clients.forEach(client => this.sendKosyMessageToAppClient(receiveMessage, client));
                     break;
-                case "end-integration":
-                    this.log("End integration");
+                case "stop-app":
+                    this.log("Stop app");
                     [ ...this.clients ].forEach(client => this.removeClient(client.info.clientUuid));
                     break;
                 default:
@@ -122,14 +122,14 @@ module Kosy.Debugger {
                 type: "client-has-left",
                 payload: removedClient.info
             }
-            this.clients.forEach(client => this.sendKosyMessageToIntegrationClient(clientHasLeftMessage, client));
+            this.clients.forEach(client => this.sendKosyMessageToAppClient(clientHasLeftMessage, client));
             //Not the safest way to do this... but it works.
             removedClient.iframe.parentElement.remove();
         }
 
         //Sends initialization info the kosy client
-        private sendInitialInfoMessage (kosyClient: KosyClient, integrationState: IntegrationState) {
-            let initialInfo: KosyMessages.ReceiveInitialInfo<IntegrationState> = {
+        private sendInitialInfoMessage (kosyClient: KosyClient, appState: AppState) {
+            let initialInfo: KosyMessages.ReceiveInitialInfo<AppState> = {
                 type: "receive-initial-info",
                 payload: {
                     clients:
@@ -140,19 +140,19 @@ module Kosy.Debugger {
                         }, {}),
                     currentClientUuid: kosyClient.info.clientUuid,
                     initializerClientUuid: this.clients[0].info.clientUuid,
-                    currentIntegrationState: integrationState
+                    currentAppState: appState
                 }
             }
-            this.sendKosyMessageToIntegrationClient(initialInfo, kosyClient);
+            this.sendKosyMessageToAppClient(initialInfo, kosyClient);
         }
 
-        //Sends a message from the debugger (kosy) to an integration
-        public sendKosyMessageToIntegrationClient (message: KosyMessages.KosyToIntegrationMessage<IntegrationState, IntegrationMessage>, toClient: KosyClient) {
+        //Sends a message from the debugger (kosy) to an app
+        public sendKosyMessageToAppClient (message: KosyMessages.KosyToAppMessage<AppState, AppMessage>, toClient: KosyClient) {
             toClient.iframe.contentWindow.postMessage(message, toClient.iframe.src);
         }
 
         private log (...message: any[]) {
-            console.log("Kosy received: ", ...message);
+            console.trace("Kosy received: ", ...message);
         }
     }
 

@@ -6,7 +6,7 @@ export function storeState (state: DebuggerState) {
 
     //Sets search params representing the state
     let searchParams = new URLSearchParams(window.location.search);
-    searchParams.set("url", state["integration-url"]);
+    searchParams.set("url", state["app-url"]);
     let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
     if (window.history.pushState) {
         //Sets the state url onto the scope
@@ -22,11 +22,11 @@ export function retrieveState (): DebuggerState {
     let urlFromSearchParams = searchParams.get("url");
     if (urlFromSearchParams) {
         return {
-            "integration-url": urlFromSearchParams
+            "app-url": urlFromSearchParams
         }
     } else {
         let storedState = JSON.parse(localStorage.getItem("state") ?? "{}");
-        if (storedState["integration-url"]) {
+        if (storedState["app-url"]) {
             return storedState;
         }
     }

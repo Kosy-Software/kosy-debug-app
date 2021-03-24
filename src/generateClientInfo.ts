@@ -1,5 +1,5 @@
-import { Building, Floor, Table, Room, ClientInfo } from './lib/kosyclient';
-import { listOfRandomNames } from './lib/listOfRandomNames';
+import { Building, Floor, Table, Room, ClientInfo } from "@kosy/kosy-app-api/types";
+import { getRandomName } from './lib/getRandomName';
 
 const defaultBuilding: Building = {
     buildingKey: "TestBuilding",
@@ -51,17 +51,16 @@ const findUnclaimedSeatNumber = (table: Table, clients: ClientInfo []) => {
 //Generates a somewhat random client that is seated at the table
 export function generateClientInfo (clients: ClientInfo []): ClientInfo {
     let clientId = Date.now().toString();
-    let seatNumber = findUnclaimedSeatNumber(defaultTable, clients);
     return {
         clientUuid: clientId,
-        clientName: listOfRandomNames[seatNumber -1 ],
+        clientName: getRandomName(),
         clientLocation: {
             type: "seated-at-table",
             building: defaultBuilding,
             floor: defaultFloor,
             room: defaultRoom,
             table: defaultTable,
-            seatNumber: seatNumber
+            seatNumber: findUnclaimedSeatNumber(defaultTable, clients)
         }
     }
 }

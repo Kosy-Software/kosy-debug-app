@@ -6,8 +6,8 @@ export function renderSetup (state: DebuggerState): Promise<DebuggerState> {
     return new Promise((resolve, reject) => {
         let template = document.querySelector("#setupRoot") as HTMLTemplateElement;
         let copy = template.content.firstElementChild.cloneNode(true) as HTMLElement;
-        let inputElement = copy.querySelector("#integration-url") as HTMLInputElement;
-        inputElement.value = state['integration-url'] || "";
+        let inputElement = copy.querySelector("#app-url") as HTMLInputElement;
+        inputElement.value = state['app-url'] || "";
 
         let modal = new tingle.modal({
             footer: true,
@@ -16,9 +16,9 @@ export function renderSetup (state: DebuggerState): Promise<DebuggerState> {
             closeLabel: "Close",
             cssClass: [ "rounded-buttons" ],
             onClose: () => {
-                let integrationUrl = inputElement.value;
-                if (integrationUrl) {
-                    resolve({ "integration-url": integrationUrl });
+                let appUrl = inputElement.value;
+                if (appUrl) {
+                    resolve({ "app-url": appUrl });
                 } else {
                     reject();
                 }

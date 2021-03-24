@@ -1,4 +1,4 @@
-import { ClientInfo } from "../lib/kosyclient";
+import { ClientInfo } from "@kosy/kosy-app-api/types";
 
 export function renderKosyClient (clientInfo: ClientInfo, url: string, onClientRemoved: ((clientUuid: string) => void)) {
     let template = document.getElementById("clientRoot") as HTMLTemplateElement;
