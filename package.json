@@ -29,7 +29,7 @@
         "webpack-dev-server": "^3.11.2"
     },
     "dependencies": {
-        "@kosy/kosy-app-api": "^0.1.8",
+        "@kosy/kosy-app-api": "^0.1.9",
         "tingle.js": "^0.16.0"
     }
 }
