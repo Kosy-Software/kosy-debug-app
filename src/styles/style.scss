@@ -99,6 +99,12 @@ label {
     width: 100%;
 }
 
+#clients {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+}
+
 .client {
     width: 640px;
     margin-right: 40px;
