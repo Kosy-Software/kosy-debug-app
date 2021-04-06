@@ -151,3 +151,8 @@ label {
         padding: 1.5rem 3rem;
     }
 }
+
+button:focus {
+    outline: 0;
+    box-shadow: 0 0 2px colors.$color-grey-darkest;
+}
