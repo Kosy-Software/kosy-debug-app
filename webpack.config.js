@@ -65,11 +65,6 @@ const getPlugins = (isProduction) => {
             ...basePlugins, 
             new MiniCssExtractPlugin({
                 filename: "style.[contenthash].css"
-            }),
-            new CopyWebpackPlugin({ 
-                patterns: [
-                    { from: "./src/assets", to: "./assets" }
-                ]
             })
         ]; 
     }
@@ -132,6 +127,14 @@ module.exports = (env, options) => {
                         "css-loader",
                         "sass-loader"
                     ]
+                },
+                {
+                    test: /\.(png|jpe?g|gif|svg)$/i,
+                    use: [
+                        {
+                            loader: 'file-loader',
+                        },
+                    ],
                 }
             ]
         },

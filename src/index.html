@@ -2,25 +2,44 @@
 <html>
     <head>
         <title>Kosy - Debugger</title>
-        <meta charset="utf-8">
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">    
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Poppins:wght@400;500;700&display=swap" rel="stylesheet">
     </head>
     <body>
         <template id="clientRoot">
-            <div style="display: inline-grid">
-                <iframe height="400px" width="700px"></iframe>
-                <button class="">Remove from table</button>
+            <div class="client" style="display: inline-grid">
+                <iframe></iframe>
+                <div class="rounded-buttons">
+                    <button class="btn-remove full-width">
+                        <span>Remove from table</span>
+                        <i class="icon-trash"></i>
+                    </button>
+                </div>
             <div>
         </template>
         <template id="setupRoot">
-            <fieldset>
-                <legend>App url</legend>
-                <input id="app-url" style="width: 100%" />
-            </fieldset>
+            <div class="change-app-url">
+                <label>App URL</label>
+                <input id="app-url" class="full-width rounded-input" placeholder="https://my.awesome.integration.com" />
+                <span class="gutter"></span>
+                <div class="centered">
+                    <button id="confirm" class="btn-primary btn-rounded">Change app URL</button>
+                </div>
+                <div class="centered">
+                    <button id="cancel" class="btn-secondary">Cancel</button>    
+                </div>
+            </div>
         </template>
-        <div>
-            <button id="setup">Click me to change the app url</button>
-            <button id="add-client">Click me to add another client</button>
-        </div>        
+        <h1>Welcome to the Kosy Debug app</h1>
+        <p>You can test Kosy Table Apps here. For this purpose, you can click on "Change app URL" and paste the URL of the table app in the modal. Then click "Add another client". Voila, your app is there!</p>
+        <div class="gutter-xs"></div>
+        <div class="rounded-buttons">
+            <button id="setup">Change app URL</button>
+            <button id="add-client">Add another client</button>
+        </div>
+        <div class="gutter-sm"></div>
         <div id="clients"></div>
     </body>
 </html>

@@ -1,3 +1,153 @@
+@use "_colors.scss" as colors;
+
+@mixin border($border-radius) {
+    border: 1px solid colors.$color-grey-border;
+    border-radius: $border-radius;
+}
+
+@mixin gutter($height) {
+    display: block;
+    height: $height;
+}
+
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.02em;
+    font-size: 14px;
+    color: colors.$color-black-bluish;
+}
+h1, h2, h3, h4, h5 {
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    margin-left: 40px;
+    margin-top: 32px;
+}
+
+button {
+    cursor: pointer;
+
+    &:disabled {
+        cursor: not-allowed;
+    }
+}
+
+button {
+    height: 52px;
+    padding: 17.5px 20px;
+    font-size: 16px;
+}
+
 .rounded-buttons button {
-    border-radius: 12px;
+    @include border(28px);
+    height: 52px;
+    background-color: white;
+    padding: 17.5px 20px;
+    margin-right: 24px;
+    font-size: 16px;
+    color: #69819D;
+}
+
+.btn-rounded {
+    border-radius: 28px;
+}
+
+.btn-primary {
+    background-color: colors.$color-primary;
+    color: white;
+    border: 0;
+}
+
+.btn-secondary {
+    color: colors.$color-grey-dark;
+    background-color: white;
+    border: 0;
+}
+
+.rounded-input {
+    @include border(8px);
+}
+
+input {
+    height: 52px;
+    padding: 20px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    padding-bottom: 12px;
+    padding-top: 12px;
+}
+
+.icon-trash {
+    display: inline-block;
+    content: ' ';
+    background-image: url("../assets/trash.svg");
+    background-repeat: no-repeat;
+    background-size: 1em 1em;
+    height: 1em;
+    width: 1em;
+    vertical-align: text-bottom;
+}
+
+.full-width {
+    width: 100%;
+}
+
+.client {
+    width: 640px;
+    margin-right: 40px;
+
+    iframe {
+        @include border(24px);
+        width: 640px;
+        height: 400px;
+        filter: drop-shadow(0px 0px 24px rgba(204, 204, 204, 0.2));
+        box-sizing: border-box;
+    }
+
+    button {
+        margin-top: 10px;
+        margin-bottom: 40px;
+        cursor: pointer;
+    }
+}
+
+.gutter-xs {
+    @include gutter(12px);
+}
+
+.gutter-sm {
+    @include gutter(24px);
+}
+
+.gutter {
+    @include gutter(36px);
+}
+
+.centered {
+    text-align: center;
+}
+
+//Overwriting a default style of tingle
+.tingle-enabled {
+    position: unset;
+}
+.tingle-modal {
+    background: rgba(29, 34, 79, 0.65);
+    backdrop-filter: unset;
+}
+.tingle-modal-box {
+    border-radius: 36px;
+    max-width: 530px;
+    background: white;
+
+    &__content {
+        padding: 1.5rem 3rem;
+    }
 }
