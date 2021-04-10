@@ -1,7 +1,11 @@
 # kosy-debug-app
 This app will emulate the behavior of the kosy p2p protocol for development purposes
 
-## to configure this app
+## Debugging tool
+
+https://kosy-software.github.io/kosy-debug-app/?url=https://kosy-software.github.io/google-drive-table-app
+
+## To configure this app
 Add a settings.json file (don't check it in! it is .gitignore so every kosy app developer can start using this code). Then add in the following json:
 
 ```Typescript
