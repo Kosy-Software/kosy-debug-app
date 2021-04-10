@@ -36,7 +36,7 @@ module Kosy.Debugger {
                 if (this.state['app-url']) {
                     this.addNewClient (this.state["app-url"]);
                 } else {
-                    alert ("No app url found. Run setup first.")
+                    alert ("Please select an app URL first")
                 }
             }
             (document.getElementById("setup") as HTMLButtonElement).onclick = async event => {
