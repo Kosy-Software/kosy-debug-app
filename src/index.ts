@@ -68,8 +68,8 @@ module Kosy.Debugger {
 
                         //Request the app's state from the "host"
                         this.sendKosyMessageToAppClient({ 
-                            type: "request-app-state",
-                            payload: {} 
+                            type: "get-app-state",
+                            clientUuids: [ kosyClient.info.clientUuid ]
                         }, this.clients[0])
                     } else {
                         //This SHOULD not occur, but, yea... javascript :D
@@ -120,7 +120,7 @@ module Kosy.Debugger {
             this.clients = this.clients.filter(existing => existing != removedClient);
             let clientHasLeftMessage: KosyMessages.ClientHasLeft = {
                 type: "client-has-left",
-                payload: removedClient.info
+                clientUuid: clientUuid
             }
             this.clients.forEach(client => this.sendKosyMessageToAppClient(clientHasLeftMessage, client));
             //Not the safest way to do this... but it works.
