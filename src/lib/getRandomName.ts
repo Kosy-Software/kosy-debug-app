@@ -1447,7 +1447,7 @@ function* generator() {
         if (i > listOfRandomLastNames.length) {
             i = 0;
         }
-        yield listOfRandomFirstNames[i] + listOfRandomLastNames[i];
+        yield listOfRandomFirstNames[i] + " " + listOfRandomLastNames[i];
     }
     //Necessary to make typescript happy
     return "";
