@@ -3,7 +3,6 @@ const resolve = (file) => path.join(__dirname, file);
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const fs = require("fs");
 const optionalRequire = require("optional-require")(require);

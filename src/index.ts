@@ -15,9 +15,11 @@ module Kosy.Debugger {
     }
 
     //Represents "any" app client's state type
-    type AppState = any;
-    //Represents "any" app client's message type
-    type AppMessage = any;
+    type AppState = unknown;
+    //Represents "any" app client to host message type
+    type ClientToHostMessage = unknown;
+    //Represents "any" app host to client message type
+    type HostToClientMessage = unknown;
 
     export class App {
         //A collection of all clients
@@ -28,7 +30,7 @@ module Kosy.Debugger {
         public start (initialState: DebuggerState): void {
             this.state = initialState;
             //Sets up the message listener to listen for incoming messages
-            window.addEventListener("message", (event: MessageEvent<KosyMessages.AppToKosyMessage<AppState, AppMessage>>) => {
+            window.addEventListener("message", (event: MessageEvent<KosyMessages.AppToKosyMessage<AppState, ClientToHostMessage, HostToClientMessage>>) => {
                 this.receiveIncomingMessage(event.data, event.source);
             });
             //Sets up the "add-client" button for onclick events
@@ -47,10 +49,10 @@ module Kosy.Debugger {
         }
 
         //Receives a message from an app to the debugger (kosy)
-        public receiveIncomingMessage (message: KosyMessages.AppToKosyMessage<AppState, AppMessage>, source: MessageEventSource) {
-            switch (message.type) {
+        public receiveIncomingMessage (eventData: KosyMessages.AppToKosyMessage<AppState, ClientToHostMessage, HostToClientMessage>, source: MessageEventSource) {
+            switch (eventData.type) {
                 //If we've received the initial message
-                case "ready-and-listening":
+                case "ready-and-listening": {
                     this.log("Ready and listening.");
                     //Figure out which app client sent it
                     let kosyClients = this.clients.filter(client => client.iframe.contentWindow === source);
@@ -60,7 +62,7 @@ module Kosy.Debugger {
                         //Broadcast to others that a new app client has joined
                         let clientHasJoinedMessage: KosyMessages.ClientHasJoined = {
                             type: "client-has-joined",
-                            payload: kosyClient.info
+                            clientInfo: kosyClient.info
                         }
                         this.clients.forEach(client => {
                             this.sendKosyMessageToAppClient(clientHasJoinedMessage, client) 
@@ -76,29 +78,43 @@ module Kosy.Debugger {
                         throw "Could not find the message's source, this should not occur?"
                     }
                     break;
-                case "receive-app-state":
-                    this.log("Kosy received the app's current state");
+                }
+                case "receive-app-state": {
+                    this.log("Kosy received the app's current state: ", eventData.state);
                     //Send the app client its initial info
                     this.clients
                         .filter(client => !client.initialized)
                         .forEach(client => {
-                            this.sendInitialInfoMessage(client, message.payload);
+                            this.sendInitialInfoMessage(client, eventData);
                             client.initialized = true;
                         });
                     break;
-                case "relay-message":
-                    //Broadcasts the message to all clients
-                    this.log("Relay message: ", message.payload);
-                    let receiveMessage: KosyMessages.ReceiveMessage<AppMessage> = {
-                        type: "receive-message",
-                        payload: message.payload
+                }
+                case "relay-message-to-host": {
+                    this.log("Relay message to host: ", eventData.message);
+                    let receiveMessage: KosyMessages.ReceiveMessageAsHost<ClientToHostMessage> = {
+                        type: "receive-message-as-host",
+                        message: eventData.message
                     };
+                    this.sendKosyMessageToAppClient(receiveMessage, this.clients[0]);
+                    break;
+                }
+                case "relay-message-to-clients": {
+                    this.log("Relay message to clients: ", eventData.message);
+                    let receiveMessage: KosyMessages.ReceiveMessageAsClient<HostToClientMessage> = {
+                        type: "receive-message-as-client",
+                        message: eventData.message,
+                        messageNumber: eventData.messageNumber,
+                        sentByClientUuid: eventData.sentByClientUuid
+                    }
                     this.clients.forEach(client => this.sendKosyMessageToAppClient(receiveMessage, client));
                     break;
-                case "stop-app":
+                }
+                case "stop-app": {
                     this.log("Stop app");
                     [ ...this.clients ].forEach(client => this.removeClient(client.info.clientUuid));
                     break;
+                }
                 default:
                     //Ignore unknown messages
                     break;
@@ -128,7 +144,7 @@ module Kosy.Debugger {
         }
 
         //Sends initialization info the kosy client
-        private sendInitialInfoMessage (kosyClient: KosyClient, appState: AppState) {
+        private sendInitialInfoMessage (kosyClient: KosyClient, receiveAppState: KosyMessages.ReceiveAppState<AppState>) {
             let initialInfo: KosyMessages.ReceiveInitialInfo<AppState> = {
                 type: "receive-initial-info",
                 payload: {
@@ -140,14 +156,15 @@ module Kosy.Debugger {
                         }, {}),
                     currentClientUuid: kosyClient.info.clientUuid,
                     initializerClientUuid: this.clients[0].info.clientUuid,
-                    currentAppState: appState
-                }
-            }
+                    currentAppState: receiveAppState.state
+                },
+                latestMessageNumber: receiveAppState.latestMessageNumber
+            };
             this.sendKosyMessageToAppClient(initialInfo, kosyClient);
         }
 
         //Sends a message from the debugger (kosy) to an app
-        public sendKosyMessageToAppClient (message: KosyMessages.KosyToAppMessage<AppState, AppMessage>, toClient: KosyClient) {
+        public sendKosyMessageToAppClient (message: KosyMessages.KosyToAppMessage<AppState, ClientToHostMessage, HostToClientMessage>, toClient: KosyClient) {
             toClient.iframe.contentWindow.postMessage(message, toClient.iframe.src);
         }
 
