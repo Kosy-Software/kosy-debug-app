@@ -59,16 +59,7 @@ module Kosy.Debugger {
                     if (kosyClients.length === 1) {
                         let kosyClient = kosyClients[0];
 
-                        //Broadcast to others that a new app client has joined
-                        let clientHasJoinedMessage: KosyMessages.SetClientInfo = {
-                            type: "set-client-info",
-                            clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
-                            hostClientUuid: this.clients[0].info.clientUuid
-                        };
-                        this.clients.forEach(client => {
-                            this.sendKosyMessageToAppClient(clientHasJoinedMessage, client) 
-                        });
-
+                        
                         if (this.clients.length === 1) {
                             //If there's only one client at the table return an empty state
                             this.sendInitialInfoMessage(kosyClient, {
@@ -77,6 +68,14 @@ module Kosy.Debugger {
                                 latestMessageNumber: 0,
                                 state: null
                             });
+
+                            //Send the updated client info to the host
+                            let clientHasJoinedMessage: KosyMessages.SetClientInfo = {
+                                type: "set-client-info",
+                                clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
+                                hostClientUuid: this.clients[0].info.clientUuid
+                            };
+                            this.sendKosyMessageToAppClient(clientHasJoinedMessage, this.clients[0]);
                         } else {
                             //Request the app's state from the "host"
                             this.sendKosyMessageToAppClient({ 
@@ -99,6 +98,14 @@ module Kosy.Debugger {
                             this.sendInitialInfoMessage(client, eventData);
                             client.initialized = true;
                         });
+
+                    //Send the updated client info to the host
+                    let clientHasJoinedMessage: KosyMessages.SetClientInfo = {
+                        type: "set-client-info",
+                        clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
+                        hostClientUuid: this.clients[0].info.clientUuid
+                    };
+                    this.sendKosyMessageToAppClient(clientHasJoinedMessage, this.clients[0]);                    
                     break;
                 }
                 case "relay-message-to-host": {
@@ -150,7 +157,7 @@ module Kosy.Debugger {
                 clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
                 hostClientUuid: this.clients[0]?.info.clientUuid
             };
-            this.clients.forEach(client => this.sendKosyMessageToAppClient(clientHasLeftMessage, client));
+            this.sendKosyMessageToAppClient(clientHasLeftMessage, this.clients[0]);
             //Not the safest way to do this... but it works.
             removedClient.iframe.parentElement.remove();
         }
