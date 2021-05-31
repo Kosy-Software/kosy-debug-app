@@ -873,10 +873,10 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.3.tgz#90420f9f9c6d3987f176a19a7d8e764271a2f55d"
   integrity sha512-Fxt+AfXgjMoin2maPIYzFZnQjAXjAL0PHscM5pRTtatFqB+vZxAM9tLp2Optnuw3QOQC40jTNeGYFOMvyf7v9g==
 
-"@kosy/kosy-app-api@^0.3.7":
-  version "0.3.7"
-  resolved "https://registry.yarnpkg.com/@kosy/kosy-app-api/-/kosy-app-api-0.3.7.tgz#b1ffe27865a018b9ce9c99c81d86640e716a7bad"
-  integrity sha512-eizE/kr1w/ldL4g+OJPlsrV8f4VUZXrTZCxkXMcy2ItdIETrwtxxajoM3uLw3qjhA/CDzHNDwrLRMjHSfZTpsQ==
+"@kosy/kosy-app-api@^0.3.8":
+  version "0.3.8"
+  resolved "https://registry.yarnpkg.com/@kosy/kosy-app-api/-/kosy-app-api-0.3.8.tgz#513eb0bdcfcc797e1ebd554eeca450acf429eeba"
+  integrity sha512-TPpNf8dBayoU1zr/OapCokO2SAKfxaUBnMJ13NMJr5HzLAaQyBo+CfyeFGCUO1hyCI28wCEMz/utcUHMnbJImQ==
 
 "@types/eslint-scope@^3.7.0":
   version "3.7.0"
