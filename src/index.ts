@@ -138,7 +138,7 @@ module Kosy.Debugger {
             let clientHasLeftMessage: KosyMessages.SetClientInfo = {
                 type: "set-client-info",
                 clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
-                hostClientUuid: this.clients[0].info.clientUuid
+                hostClientUuid: this.clients[0]?.info.clientUuid
             };
             this.clients.forEach(client => this.sendKosyMessageToAppClient(clientHasLeftMessage, client));
             //Not the safest way to do this... but it works.
