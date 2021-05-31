@@ -69,11 +69,21 @@ module Kosy.Debugger {
                             this.sendKosyMessageToAppClient(clientHasJoinedMessage, client) 
                         });
 
-                        //Request the app's state from the "host"
-                        this.sendKosyMessageToAppClient({ 
-                            type: "get-app-state",
-                            clientUuids: [ kosyClient.info.clientUuid ]
-                        }, this.clients[0])
+                        if (this.clients.length === 1) {
+                            //If there's only one client at the table return an empty state
+                            this.sendInitialInfoMessage(kosyClient, {
+                                type: "receive-app-state",
+                                clientUuids: [ kosyClient.info.clientUuid ],
+                                latestMessageNumber: 0,
+                                state: null
+                            });
+                        } else {
+                            //Request the app's state from the "host"
+                            this.sendKosyMessageToAppClient({ 
+                                type: "get-app-state",
+                                clientUuids: [ kosyClient.info.clientUuid ]
+                            }, this.clients[0]);
+                        }
                     } else {
                         //This SHOULD not occur, but, yea... javascript :D
                         throw "Could not find the message's source, this should not occur?"
