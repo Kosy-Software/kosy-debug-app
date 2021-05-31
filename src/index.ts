@@ -60,10 +60,11 @@ module Kosy.Debugger {
                         let kosyClient = kosyClients[0];
 
                         //Broadcast to others that a new app client has joined
-                        let clientHasJoinedMessage: KosyMessages.ClientHasJoined = {
-                            type: "client-has-joined",
-                            clientInfo: kosyClient.info
-                        }
+                        let clientHasJoinedMessage: KosyMessages.SetClientInfo = {
+                            type: "set-client-info",
+                            clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
+                            hostClientUuid: this.clients[0].info.clientUuid
+                        };
                         this.clients.forEach(client => {
                             this.sendKosyMessageToAppClient(clientHasJoinedMessage, client) 
                         });
@@ -106,7 +107,7 @@ module Kosy.Debugger {
                         message: eventData.message,
                         messageNumber: eventData.messageNumber,
                         sentByClientUuid: eventData.sentByClientUuid
-                    }
+                    };
                     this.clients.forEach(client => this.sendKosyMessageToAppClient(receiveMessage, client));
                     break;
                 }
@@ -134,10 +135,11 @@ module Kosy.Debugger {
         private removeClient (clientUuid: string): void {
             let removedClient = this.clients.find(existing => existing.info.clientUuid == clientUuid);
             this.clients = this.clients.filter(existing => existing != removedClient);
-            let clientHasLeftMessage: KosyMessages.ClientHasLeft = {
-                type: "client-has-left",
-                clientUuid: clientUuid
-            }
+            let clientHasLeftMessage: KosyMessages.SetClientInfo = {
+                type: "set-client-info",
+                clients: this.clients.reduce((clients: { [clientUuid: string]: ClientInfo }, nextClient) => { clients[nextClient.info.clientUuid] = nextClient.info; return clients; }, {}),
+                hostClientUuid: this.clients[0].info.clientUuid
+            };
             this.clients.forEach(client => this.sendKosyMessageToAppClient(clientHasLeftMessage, client));
             //Not the safest way to do this... but it works.
             removedClient.iframe.parentElement.remove();
