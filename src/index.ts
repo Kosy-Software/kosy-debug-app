@@ -184,7 +184,7 @@ module Kosy.Debugger {
 
         //Sends a message from the debugger (kosy) to an app
         public sendKosyMessageToAppClient (message: KosyMessages.KosyToAppMessage<AppState, ClientToHostMessage, HostToClientMessage>, toClient: KosyClient) {
-            toClient.iframe.contentWindow.postMessage(message, toClient.iframe.src);
+            toClient?.iframe.contentWindow.postMessage(message, toClient.iframe.src);
         }
 
         private log (...message: any[]) {
