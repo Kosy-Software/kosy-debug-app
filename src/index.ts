@@ -188,7 +188,11 @@ module Kosy.Debugger {
         }
 
         private log (...message: any[]) {
-            console.trace("Kosy received: ", ...message);
+            if (localStorage.getItem("trace-on") === "1") {
+                console.trace("Kosy received: ", ...message);
+            }else {
+                console.log("Kosy received: ", ...message);
+            }
         }
     }
 
