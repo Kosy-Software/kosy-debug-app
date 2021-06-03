@@ -68,6 +68,7 @@ module Kosy.Debugger {
                                 latestMessageNumber: 0,
                                 state: null
                             });
+                            kosyClient.initialized = true;
 
                             //Send the updated client info to the host
                             let clientHasJoinedMessage: KosyMessages.SetClientInfo = {
