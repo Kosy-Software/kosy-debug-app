@@ -38,7 +38,7 @@ const findUnclaimedSeatNumber = (table: Table, clients: ClientInfo []) => {
     }, new Array(++table.numberOfSeats));
 
     //Goes through the table's seat numbers and tries to find an unclaimed one
-    for (let seatNumber = 1; seatNumber <= table.numberOfSeats; seatNumber++) {
+    for (let seatNumber = 0; seatNumber <= table.numberOfSeats; seatNumber++) {
         if (!seatIsOccupied[seatNumber]) {
             return seatNumber;
         }
