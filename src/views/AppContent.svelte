@@ -207,7 +207,7 @@
             clientUuidSwitchingSeat = clientUuid;
         }
     }
-    let switchHost = (clientUuid: string) => {
+    let makeHost = (clientUuid: string) => {
         hostClient = clients.find(client => client.info.clientUuid == clientUuid);
         let hostHasChangedMessage: KosyMessages.SetClientInfo = {
             type: "set-client-info",
@@ -220,6 +220,7 @@
 
 <h1>Welcome to the Kosy Debug app</h1>
 <p>You can test Kosy Table Apps here. For this purpose, you can click on "Change app URL" and paste the URL of the table app in the modal. Then click "Add another client". Voila, your app is there!</p>
+<p>To switch seats you need to click "Switch seat" on one client, then click "Switch seat" on another client.</p>
 <div class="gutter-xs"></div>
 <div class="rounded-buttons">
     <button on:click={() => showSetup()}>Change app URL</button>
@@ -234,7 +235,7 @@
             {clientUuidSwitchingSeat}
             on:delete={(event) => removeClient(event.detail.clientUuid)} 
             on:switch-seat={(event) => switchSeat(event.detail.clientUuid)} 
-            on:switch-host={(event) => switchHost(event.detail.clientUuid)}>
+            on:make-host={(event) => makeHost(event.detail.clientUuid)}>
             <iframe title="table-app" src={state["app-url"]} bind:this={client.iframe}></iframe>
         </KosyClientComponent>
     {/each}

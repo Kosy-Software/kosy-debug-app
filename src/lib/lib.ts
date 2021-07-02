@@ -11,6 +11,6 @@ export interface KosyClient {
 export type KosyClientEvent<AppState, ClientToHostMessage, HostToClientMessage> = {
     "delete": { clientUuid: string };
     "switch-seat": {clientUuid: string};
-    "switch-host": {clientUuid: string};
+    "make-host": {clientUuid: string};
     "receive-incoming-message": { clientUuid: string, message: AppToKosyMessage<AppState, ClientToHostMessage, HostToClientMessage> }
 }

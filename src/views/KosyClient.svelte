@@ -16,8 +16,8 @@
         dispatch("switch-seat", { clientUuid: client.info.clientUuid });
     };
 
-    let onSwitchHost = () => {
-        dispatch("switch-host", { clientUuid: client.info.clientUuid });
+    let onMakeHost = () => {
+        dispatch("make-host", { clientUuid: client.info.clientUuid });
     }
 </script>
 
@@ -44,8 +44,8 @@
                 <i class="icon-switch"></i>
             </button>
             {#if client.info.clientUuid !== hostClientUuid}
-                <button class="btn-switch" on:click={onSwitchHost}>
-                    <span>Switch host</span>
+                <button class="btn-switch" on:click={onMakeHost}>
+                    <span>Make host</span>
                 </button>
             {/if}
             <button class="btn-remove" on:click={onDelete}>
