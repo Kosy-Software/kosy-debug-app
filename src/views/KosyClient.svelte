@@ -32,7 +32,7 @@
             <br/>
             <span class="client-info-location">
                 {#if client.info.clientLocation.seatNumber >= 0}
-                    Seat: {client.info.clientLocation.seatNumber}
+                    Seat: {client.info.clientLocation.seatNumber + 1}
                 {:else}
                     Unknown seat: {JSON.stringify(client.info.clientLocation)}
                 {/if}
