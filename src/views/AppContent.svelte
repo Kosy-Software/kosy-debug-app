@@ -200,7 +200,7 @@
                 let seat2 = client2?.info.clientLocation.seatNumber;
                 client1.info.clientLocation.seatNumber = seat2;
                 client2.info.clientLocation.seatNumber = seat1;
-                clients = clients.sort((client, otherClient) => client.info.clientLocation.seatNumber - otherClient.info.clientLocation.seatNumber);
+                clients = clients;
             }            
             clientUuidSwitchingSeat = null;
         } else {
