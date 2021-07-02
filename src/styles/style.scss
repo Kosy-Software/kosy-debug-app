@@ -12,7 +12,7 @@
 
 body {
     margin: 0;
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter","sans-serif";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     letter-spacing: -0.02em;
@@ -20,10 +20,10 @@ body {
     color: colors.$color-black-bluish;
 }
 h1, h2, h3, h4, h5 {
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins","sans-serif";
 }
 
-body {
+#container {
     margin-left: 40px;
     margin-top: 32px;
 }
@@ -40,6 +40,7 @@ button {
     height: 52px;
     padding: 17.5px 20px;
     font-size: 16px;
+    color: colors.$color-grey-dark;
 }
 
 .rounded-buttons button {
@@ -49,7 +50,6 @@ button {
     padding: 17.5px 20px;
     margin-right: 24px;
     font-size: 16px;
-    color: #69819D;
 }
 
 .btn-rounded {
@@ -70,6 +70,7 @@ button {
 
 .rounded-input {
     @include border(8px);
+    box-sizing: border-box;
 }
 
 input {
@@ -84,16 +85,21 @@ label {
     padding-top: 12px;
 }
 
-.icon-trash {
-    display: inline-block;
-    content: ' ';
-    background-image: url("../assets/trash.svg");
-    background-repeat: no-repeat;
-    background-size: 1em 1em;
-    height: 1em;
-    width: 1em;
-    vertical-align: text-bottom;
+@mixin icon($name) {
+    .icon-#{$name} {
+        display: inline-block;
+        content: ' ';
+        background-image: url("../assets/#{$name}.svg");
+        background-repeat: no-repeat;
+        background-size: 1em 1em;
+        height: 1em;
+        width: 1em;
+        vertical-align: text-bottom;
+    }
 }
+
+@include icon("trash");
+@include icon("switch");
 
 .full-width {
     width: 100%;
@@ -105,23 +111,52 @@ label {
     justify-content: flex-start;
 }
 
+.client-footer {
+    background-color: colors.$color-grey-light;
+    margin-top: -30px;
+    padding-top: 36px;
+    margin-bottom: 40px;
+    padding-bottom: 12px;
+    border-radius: 12px;
+    border: 2px solid colors.$color-grey-border;
+}
+
+.client-info {
+    margin-top: 9px;
+    margin-left: 20px;
+}
+
+.client.host iframe {
+    border: 2px solid #D8CCFF;
+}
+
+.client-info-host {
+    color: colors.$color-primary;
+    font-weight: bold;
+}
+
 .client {
-    width: 848px;
+    width: 45vw;
     margin-right: 40px;
+    display: inline-block;
 
     iframe {
-        @include border(24px);
-        width: 848px;
+        @include border(12px);
+        width: 45vw;
         height: 477px;
         filter: drop-shadow(0px 0px 24px rgba(204, 204, 204, 0.2));
         box-sizing: border-box;
+        background-color: white;
     }
 
     button {
-        margin-top: 10px;
-        margin-bottom: 40px;
         cursor: pointer;
     }
+}
+
+.btn-switch.switching {
+    color: colors.$color-info;
+    border-color: colors.$color-info;
 }
 
 .gutter-xs {
@@ -140,25 +175,13 @@ label {
     text-align: center;
 }
 
-//Overwriting a default style of tingle
-.tingle-enabled {
-    position: unset;
-}
-.tingle-modal {
-    background: rgba(29, 34, 79, 0.65);
-    backdrop-filter: unset;
-}
-.tingle-modal-box {
-    border-radius: 36px;
-    max-width: 530px;
-    background: white;
-
-    &__content {
-        padding: 1.5rem 3rem;
-    }
-}
-
 button:focus {
     outline: 0;
     box-shadow: 0 0 2px colors.$color-grey-darkest;
+}
+
+.clearfix::after {
+    content: "";
+    clear: both;
+    display: table;
 }
