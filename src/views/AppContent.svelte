@@ -44,6 +44,7 @@
                 let kosyClients = clients.filter(client => client.iframe.contentWindow === source);
                 if (kosyClients.length === 1) {
                     let kosyClient = kosyClients[0];
+                    kosyClient.initialized = false;
                     
                     if (clients.length === 1) {
                         initializeClients({
@@ -236,7 +237,7 @@
             on:delete={(event) => removeClient(event.detail.clientUuid)} 
             on:switch-seat={(event) => switchSeat(event.detail.clientUuid)} 
             on:make-host={(event) => makeHost(event.detail.clientUuid)}>
-            <iframe title="table-app" src={state["app-url"]} bind:this={client.iframe}></iframe>
+            <iframe title="table-app" src={state["app-url"] + "?clientId=" + client.info.clientUuid} bind:this={client.iframe}></iframe>
         </KosyClientComponent>
     {/each}
 {/if}
