@@ -229,7 +229,7 @@
 </div>
 <div class="gutter-sm"></div>
 {#if state["app-url"]}
-    {#each clients as client }
+    {#each clients as client (client) }
         <KosyClientComponent 
             hostClientUuid={hostClient.info.clientUuid} 
             {client}
