@@ -31,10 +31,10 @@
             <span class="client-info-name">{client.info.clientName}</span>
             <br/>
             <span class="client-info-location">
-                {#if client.info.clientLocation.seatNumber >= 0}
-                    Seat: {client.info.clientLocation.seatNumber + 1}
+                {#if client.info.seatNumber >= 0}
+                    Seat: {client.info.seatNumber + 1}
                 {:else}
-                    Unknown seat: {JSON.stringify(client.info.clientLocation)}
+                    Unknown seat: {JSON.stringify(client.info)}
                 {/if}
             </span>
         </div>

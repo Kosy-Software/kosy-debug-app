@@ -134,7 +134,9 @@
                             }, {}),
                         currentClientUuid: client.info.clientUuid,
                         initializerClientUuid: clients[0].info.clientUuid,
-                        currentAppState: message.state
+                        currentAppState: message.state,
+                        locationUuid: "Kosy_Debug_App",
+                        locationName: "Kosy debug app"
                     },
                     latestMessageNumber: message.latestMessageNumber
                 };
@@ -197,10 +199,10 @@
             if (clientUuid !== clientUuidSwitchingSeat) {
                 let client1 = clients.find(client => client.info.clientUuid == clientUuidSwitchingSeat);
                 let client2 = clients.find(client => client.info.clientUuid == clientUuid);
-                let seat1 = client1?.info.clientLocation.seatNumber;
-                let seat2 = client2?.info.clientLocation.seatNumber;
-                client1.info.clientLocation.seatNumber = seat2;
-                client2.info.clientLocation.seatNumber = seat1;
+                let seat1 = client1?.info.seatNumber;
+                let seat2 = client2?.info.seatNumber;
+                client1.info.seatNumber = seat2;
+                client2.info.seatNumber = seat1;
                 clients = clients;
             }            
             clientUuidSwitchingSeat = null;
