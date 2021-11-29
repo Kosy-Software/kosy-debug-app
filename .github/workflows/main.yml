@@ -22,9 +22,10 @@ jobs:
         with:
           persist-credentials: false
        
-      - name: Install and run typescript 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
+      - name: Install, Check and Build 🔧 # This example project is built using npm and outputs the result to the 'build' folder. Replace with the commands required to build your project, or remove this step entirely if your site is pre-built.
         run: |
           yarn install
+          yarn run check
           yarn run build
       
       - name: Deploy 🚀

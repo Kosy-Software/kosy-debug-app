@@ -4,6 +4,7 @@
     "main": "index.js",
     "scripts": {
         "start": "webpack serve --mode development --compress --open",
+        "check": "svelte-check",
         "build": "webpack --mode production"
     },
     "license": "MIT",
@@ -25,6 +26,7 @@
         "sass-loader": "^11.0.1",
         "style-loader": "^2.0.0",
         "svelte": "^3.38.3",
+        "svelte-check": "^2.2.10",
         "svelte-loader": "^3.1.2",
         "svelte-preprocess": "^4.7.3",
         "svelte-simple-modal": "^0.10.2",
