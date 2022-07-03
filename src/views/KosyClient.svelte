@@ -5,6 +5,7 @@
     export let hostClientUuid: string;
     export let clientUuidSwitchingSeat: string;
     export let client: KosyClient;
+    export let largeClients: boolean;
 
     const dispatch = createEventDispatcher<KosyClientEvent<any, any, any>>();
 
@@ -21,7 +22,7 @@
     }
 </script>
 
-<div class="client" class:host={ client.info.clientUuid === hostClientUuid }>
+<div class="client" class:large={ largeClients } class:small={ !largeClients } class:host={ client.info.clientUuid === hostClientUuid }>
     <slot></slot>
     <div class="client-footer clearfix">
         <div style="float:left" class="client-info">

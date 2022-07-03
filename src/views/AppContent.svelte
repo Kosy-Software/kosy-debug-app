@@ -8,6 +8,8 @@
     import Setup from './Setup.svelte';
     import { default as KosyClientComponent } from './KosyClient.svelte';
     import { getContext } from 'svelte';
+import App from '../App.svelte';
+import Modal from 'svelte-simple-modal/src/Modal.svelte';
 
     //Represents "any" app client's state type
     type AppState = unknown;
@@ -219,6 +221,13 @@
         };
         sendKosyMessageToAppClient(hostHasChangedMessage, hostClient);
     }
+
+    const toggleLargeClients = () => {
+        var useLargeClients = state['large-clients'] === "1";
+
+        state['large-clients'] = useLargeClients ? "0" : "1";
+        storeState(state);
+    }
 </script>
 
 <h1>Welcome to the Kosy Debug app</h1>
@@ -228,14 +237,16 @@
 <div class="rounded-buttons">
     <button on:click={() => showSetup()}>Change app URL</button>
     <button id="add-client" on:click={addClient}>Add another client</button>
+    <button on:click={() => toggleLargeClients()}>Toggle large clients</button>
 </div>
 <div class="gutter-sm"></div>
 {#if state["app-url"]}
     {#each clients as client (client) }
-        <KosyClientComponent 
+        <KosyClientComponent
             hostClientUuid={hostClient.info.clientUuid} 
             {client}
             {clientUuidSwitchingSeat}
+            largeClients={state["large-clients"] === "1"}
             on:delete={(event) => removeClient(event.detail.clientUuid)} 
             on:switch-seat={(event) => switchSeat(event.detail.clientUuid)} 
             on:make-host={(event) => makeHost(event.detail.clientUuid)}>

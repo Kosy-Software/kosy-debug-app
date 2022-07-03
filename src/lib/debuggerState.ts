@@ -1,3 +1,4 @@
 export interface DebuggerState {
-    "app-url"?: string
+    "app-url"?: string;
+    "large-clients"?: string;
 }

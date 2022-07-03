@@ -4,7 +4,7 @@ import { getRandomName } from "./getRandomName"
 const findUnclaimedSeatNumber = (clients: ClientInfo []) => {
     //Creates a "first element start at 1" array where each index represents an occupied seat
     let seatIsOccupied = clients.reduce((seatIsOccupied, client) => {
-        seatIsOccupied[client.seatNumber] = true;
+        seatIsOccupied[client.seatNumber!] = true;
         return seatIsOccupied;
     }, new Array(999));
 

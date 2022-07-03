@@ -136,17 +136,33 @@ label {
 }
 
 .client {
-    width: 45vw;
+    &.small {
+        width: 45vw;
+    }
+
+    &.large {
+        width: 1200px;
+        height: 800px;
+    }
+
     margin-right: 40px;
     display: inline-block;
 
     iframe {
         @include border(12px);
-        width: 45vw;
-        height: 477px;
         filter: drop-shadow(0px 0px 24px rgba(204, 204, 204, 0.2));
         box-sizing: border-box;
         background-color: white;
+    }
+
+    &.small iframe {
+        width: 45vw;
+        height: 477px;
+    }
+
+    &.large iframe {
+        width: 1200px;
+        height: 800px;
     }
 
     button {
